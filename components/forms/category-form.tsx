@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Tag, Sparkles } from "lucide-react";
+import { Tag, Sparkles, Search } from "lucide-react";
 import { toast } from "sonner";
 
 import { categorySchema, type CategoryInput } from "@/lib/schemas";
@@ -18,6 +18,7 @@ import { getErrorMessage } from "@/lib/api-error";
 import { slugify } from "@/lib/slugify";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ImageUploader } from "@/components/forms/image-uploader";
 import { GlowButton } from "@/components/forms/glow-button";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
@@ -36,6 +37,8 @@ export function CategoryForm({ id }: { id?: string }) {
     defaultValues: {
       name: "",
       slug: "",
+      metaTitle: "",
+      metaDescription: "",
       showOnLanding: false,
       image: "",
       parentCategory: "",
@@ -60,6 +63,8 @@ export function CategoryForm({ id }: { id?: string }) {
       reset({
         name: category.name || "",
         slug: category.slug || "",
+        metaTitle: category.metaTitle || "",
+        metaDescription: category.metaDescription || "",
         showOnLanding: category.showOnLanding ?? false,
         image: category.image || "",
         parentCategory:
@@ -182,6 +187,30 @@ export function CategoryForm({ id }: { id?: string }) {
                   {...register("slug")}
                   readOnly
                   className="h-auto cursor-not-allowed rounded-2xl border border-[#D4BFAA] bg-[#F3EEEA] px-5 py-4 font-mono text-xs text-[#8C6A5E] shadow-none focus-visible:ring-0"
+                />
+              </div>
+
+              {/* Meta Title */}
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#4B2E2B]">
+                  <Search className="h-3.5 w-3.5 text-[#A67B5B]" />
+                  Meta Title
+                </label>
+                <Input
+                  type="text"
+                  {...register("metaTitle")}
+                  className="h-auto rounded-2xl border border-[#D4BFAA] bg-[#FCFAF8] px-5 py-3 shadow-none focus-visible:ring-0"
+                />
+              </div>
+
+              {/* Meta Description */}
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-semibold text-[#4B2E2B]">
+                  Meta Description
+                </label>
+                <Textarea
+                  {...register("metaDescription")}
+                  className="min-h-[80px] rounded-2xl border border-[#D4BFAA] bg-[#FCFAF8] px-5 py-3 shadow-none focus-visible:ring-0"
                 />
               </div>
             </div>

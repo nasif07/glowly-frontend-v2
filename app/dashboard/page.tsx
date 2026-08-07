@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import {
   Package,
@@ -20,7 +21,7 @@ import { useCategories } from "@/hooks/use-categories";
 import { useOrders } from "@/hooks/use-orders";
 import { useUsers } from "@/hooks/use-users";
 import Button from "@/components/common/button";
-import type { Category } from "@/types";
+import type { Category, Order } from "@/types";
 
 function countCategories(categories: Category[]): number {
   return categories.reduce(
@@ -29,8 +30,34 @@ function countCategories(categories: Category[]): number {
   );
 }
 
-// Mock 7-day shape — no analytics endpoint exists yet to back a real chart.
-const mockSalesShape = [40, 70, 45, 90, 65, 80, 50];
+/** Last 7 days of revenue, bucketed from the orders already on hand. */
+function useWeeklySales(orders: Order[]) {
+  return useMemo(() => {
+    const days = Array.from({ length: 7 }, (_, i) => {
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+      start.setDate(start.getDate() - (6 - i));
+      return start;
+    });
+
+    const totals = days.map((start) => {
+      const end = new Date(start);
+      end.setDate(end.getDate() + 1);
+      return orders.reduce((sum, o) => {
+        if (!o.createdAt) return sum;
+        const created = new Date(o.createdAt);
+        return created >= start && created < end ? sum + o.totalAmount : sum;
+      }, 0);
+    });
+
+    const max = Math.max(...totals, 1);
+    return days.map((start, i) => ({
+      label: start.toLocaleDateString("en-US", { weekday: "short" }),
+      total: totals[i],
+      height: totals[i] > 0 ? Math.max((totals[i] / max) * 100, 6) : 2,
+    }));
+  }, [orders]);
+}
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -40,6 +67,8 @@ export default function DashboardPage() {
   const { data: categories = [] } = useCategories();
   const { data: orders = [] } = useOrders();
   const { data: users = [] } = useUsers();
+
+  const weeklySales = useWeeklySales(orders);
 
   const pendingOrders = orders.filter((o) => o.orderStatus === "pending").length;
   const deliveredOrders = orders.filter((o) => o.orderStatus === "delivered").length;
@@ -137,34 +166,34 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* --- SALES OVERVIEW (mock — no analytics endpoint yet) --- */}
+        {/* --- SALES OVERVIEW (real revenue, last 7 days) --- */}
         <div className="rounded-3xl border border-[#E0C9A6]/50 bg-white p-6 lg:col-span-2">
           <div className="mb-8 flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-lg font-bold text-[#4B2E2B]">
               <TrendingUp className="h-5 w-5" /> Sales Performance
             </h3>
             <span className="text-[10px] font-bold tracking-widest text-[#A67B5B] uppercase">
-              Preview
+              Last 7 days
             </span>
           </div>
           <div className="flex h-64 items-end justify-between gap-2 px-2">
-            {mockSalesShape.map((height, i) => (
-              <div key={i} className="relative flex-1 rounded-t-lg bg-[#FBF6EF]">
+            {weeklySales.map((day) => (
+              <div
+                key={day.label}
+                className="relative flex-1 rounded-t-lg bg-[#FBF6EF]"
+                title={`${day.label}: ৳${day.total.toLocaleString()}`}
+              >
                 <div
                   className="absolute bottom-0 w-full rounded-t-lg bg-[#E0C9A6] transition-all"
-                  style={{ height: `${height}%` }}
+                  style={{ height: `${day.height}%` }}
                 />
               </div>
             ))}
           </div>
           <div className="mt-4 flex justify-between px-2 text-[10px] font-bold tracking-widest text-[#A67B5B] uppercase">
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-            <span>Sun</span>
+            {weeklySales.map((day) => (
+              <span key={day.label}>{day.label}</span>
+            ))}
           </div>
         </div>
 

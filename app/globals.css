@@ -208,4 +208,14 @@
   .bg-cream {
     background-color: #fff8f2;
   }
+
+  /* Hides the scrollbar track/thumb on horizontally-scrollable rows (e.g. the
+     shop category chip bar) while keeping mouse-wheel/touch/trackpad scroll. */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

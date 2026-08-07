@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,9 +11,6 @@ import {
   Lock,
   User,
   ArrowRight,
-  Sparkles,
-  Zap,
-  ShieldCheck,
   AlertCircle,
   Eye,
   EyeOff,
@@ -27,26 +23,7 @@ import { getErrorMessage } from "@/lib/api-error";
 import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { GoogleIcon } from "@/components/forms/google-icon";
-import { AuthBrandPanel } from "@/components/auth/auth-brand-panel";
-import glowlyColored from "@/public/glowly-colored.png";
-
-const highlights = [
-  {
-    title: "Personalized Regimens",
-    desc: "Get product recommendations tailored specifically to your skin profile.",
-    icon: <Sparkles className="h-5 w-5" />,
-  },
-  {
-    title: "Ethical Sourcing",
-    desc: "Access a marketplace dedicated to clean, cruelty-free, and potent botanicals.",
-    icon: <Zap className="h-5 w-5" />,
-  },
-  {
-    title: "Glow Circle Rewards",
-    desc: "Earn points with every purchase and redeem them for exclusive treatments.",
-    icon: <ShieldCheck className="h-5 w-5" />,
-  },
-];
+import { AuthDrawer } from "@/components/auth/auth-drawer";
 
 const errorInput =
   "h-12 rounded-xl border bg-white pr-4 pl-12 text-base shadow-none transition-all focus:outline-none focus:ring-1 focus-visible:ring-0 border-rose-500 focus:border-rose-500 focus:ring-rose-500";
@@ -100,35 +77,8 @@ export function RegisterForm() {
   });
 
   return (
-    <div className="font-montserrat flex min-h-screen overflow-hidden bg-white">
-      <AuthBrandPanel
-        eyebrow="Your Glow, Refined"
-        heading={
-          <>
-            Begin your <br />{" "}
-            <span className="text-[#D9C5B2] font-light italic">skincare</span>{" "}
-            ritual.
-          </>
-        }
-        highlights={highlights}
-        footer="Trusted by 50k+ Glow Seekers"
-      />
-
-      {/* --- RIGHT SIDE: Registration Form --- */}
-      <div className="flex flex-1 items-center justify-center overflow-y-auto bg-[#FAF9F6] px-8 py-4 lg:p-12">
-        <div className="w-full max-w-[420px] py-5 md:py-10">
-          {/* Mobile Logo */}
-          <div className="mb-10 flex justify-center lg:hidden">
-            <Link href="/" className="flex items-center gap-3">
-              <Image
-                src={glowlyColored}
-                alt="Glowly Logo"
-                className="h-16 w-auto"
-              />
-            </Link>
-          </div>
-
-          <div className="mb-10 text-center lg:text-left">
+    <AuthDrawer>
+      <div className="mb-10 text-center">
             <h3 className="mb-3 text-2xl font-semibold text-[#300332] md:text-4xl md:font-bold">
               Join the Community
             </h3>
@@ -291,8 +241,6 @@ export function RegisterForm() {
               </p>
             </form>
           </Form>
-        </div>
-      </div>
-    </div>
+    </AuthDrawer>
   );
 }

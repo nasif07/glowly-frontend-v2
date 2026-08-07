@@ -96,7 +96,7 @@ export default function Faq() {
         </div>
 
         {/* Support CTA: Modernized to be more subtle */}
-        <div className="mt-10 md:mt-20 flex flex-col md:flex-row items-center justify-between p-8 bg-[#300332] rounded-2xl text-white overflow-hidden relative">
+        <div className="mt-10 md:mt-20 flex flex-col md:flex-row items-center justify-between p-8 bg-linear-to-br from-[#360718] via-[#8E1454] to-[#360718] rounded-2xl text-white overflow-hidden relative">
           {/* Subtle background glow */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#D9C5B2]/10 blur-3xl rounded-full -mr-16 -mt-16"></div>
 

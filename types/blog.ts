@@ -107,3 +107,38 @@ export interface BlogPost {
   views: number;
   content: BlogBlock[];
 }
+
+/* ------------------------------ Admin (API) ------------------------------ */
+/**
+ * The dashboard-authored blog post (`/blogs` API, `/dashboard/blog`). Plain
+ * English fields with a single HTML/markdown `content` body — distinct from
+ * the bilingual, block-based `RawBlogPost` demo data the public blog renders.
+ */
+export interface Blog {
+  _id: string;
+  blogId?: string;
+  title: string;
+  slug: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  excerpt: string;
+  content: string;
+  featuredImage?: string;
+  category?: string;
+  tags: string[];
+  author?: string;
+  isFeatured: boolean;
+  isPublished: boolean;
+  views?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/** Query params accepted by `GET /blogs`. */
+export interface BlogsQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  isPublished?: boolean;
+}

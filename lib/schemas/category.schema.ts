@@ -7,6 +7,8 @@ import { z } from "zod";
 export const categorySchema = z.object({
   name: z.string().min(1, "A name is required"),
   slug: z.string().min(1, "Slug is required"),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
   image: z.string().url().optional().or(z.literal("")),
   showOnLanding: z.boolean().default(false),
   parentCategory: z

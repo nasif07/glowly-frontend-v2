@@ -34,6 +34,14 @@ export interface OrderProduct {
   image?: string;
 }
 
+export interface OrderCourier {
+  provider: "steadfast";
+  consignmentId: number;
+  trackingCode: string;
+  status: string;
+  sentAt: string;
+}
+
 export interface Order {
   _id: string;
   orderId?: string;
@@ -47,6 +55,7 @@ export interface Order {
   paymentMethod: PaymentMethod;
   paymentDetails: PaymentDetails;
   orderStatus: OrderStatus;
+  courier?: OrderCourier;
   createdAt?: string;
   updatedAt?: string;
 }

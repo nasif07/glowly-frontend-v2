@@ -6,6 +6,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Range, getTrackBackground } from "react-range";
 import ProductCard from "@/components/common/product-card";
 import ProductCardSkeleton from "@/components/products/product-card-skeleton";
+import ChildCategoryBar from "@/components/products/child-category-bar";
 import Button from "@/components/common/button";
 import { Badge } from "@/components/ui/badge";
 import { useCategories } from "@/hooks/use-categories";
@@ -138,6 +139,15 @@ export default function ProductListing() {
     setExpandedCats({});
   };
 
+  // Child-category bar: set (or clear) the ?category filter, same as the sidebar.
+  const selectCategory = (name: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (name) params.set("category", name);
+    else params.delete("category");
+    params.set("page", "1");
+    commitParams(params);
+  };
+
   /* ---------------- RENDER CATEGORY ITEM ---------------- */
   const renderCategory = (cat: Category, isChild = false) => {
     const hasChildren = cat.children && cat.children.length > 0;
@@ -237,7 +247,7 @@ export default function ProductListing() {
               }}
               className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase border ${
                 activeBrand === bName
-                  ? "bg-[#300332] text-white"
+                  ? "bg-linear-to-r from-[#360718] via-[#8E1454] to-[#360718] text-white border-transparent"
                   : "bg-white text-stone-500 border-stone-200"
               }`}
             >
@@ -351,10 +361,18 @@ export default function ProductListing() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12 flex flex-col lg:flex-row gap-10">
-        <aside className="hidden lg:block w-72 sticky top-24 self-start">
-          <FilterContent />
-        </aside>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
+        {/* Child category quick-filter bar */}
+        <ChildCategoryBar
+          categories={categories}
+          activeCategory={activeCategory}
+          onSelect={selectCategory}
+        />
+
+        <div className="flex flex-col lg:flex-row gap-10">
+          <aside className="hidden lg:block w-72 sticky top-24 self-start">
+            <FilterContent />
+          </aside>
 
         <main className="flex-1">
           <div className="flex justify-between items-center mb-4 md:mb-8 border-b border-stone-200 pb-3 md:pb-5">
@@ -423,7 +441,8 @@ export default function ProductListing() {
               </div>
             )}
           </div>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   );

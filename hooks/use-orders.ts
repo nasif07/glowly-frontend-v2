@@ -86,3 +86,23 @@ export function useUpdateOrderStatus(id: string) {
     },
   });
 }
+
+/**
+ * POST /orders/:id/steadfast — send this order to Steadfast as a courier
+ * consignment, auto-filled server-side from the order's own shipping details.
+ */
+export function useSendOrderToSteadfast(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.post<ApiResponse<Order>>(
+        `/orders/${id}/steadfast`,
+      );
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.orders.detail(id) });
+      qc.invalidateQueries({ queryKey: queryKeys.orders.lists() });
+    },
+  });
+}

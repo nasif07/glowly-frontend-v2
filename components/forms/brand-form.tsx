@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Award, Sparkles, Globe } from "lucide-react";
+import { Award, Sparkles, Globe, Search } from "lucide-react";
 import { toast } from "sonner";
 
 import { brandSchema, type BrandInput } from "@/lib/schemas";
@@ -17,6 +17,7 @@ import { getErrorMessage } from "@/lib/api-error";
 import { slugify } from "@/lib/slugify";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ImageUploader } from "@/components/forms/image-uploader";
 import { GlowButton } from "@/components/forms/glow-button";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
@@ -34,6 +35,8 @@ export function BrandForm({ id }: { id?: string }) {
     defaultValues: {
       name: "",
       slug: "",
+      metaTitle: "",
+      metaDescription: "",
       logo: "",
       isActive: true,
       showOnLanding: false,
@@ -58,6 +61,8 @@ export function BrandForm({ id }: { id?: string }) {
       reset({
         name: brand.name || "",
         slug: brand.slug || "",
+        metaTitle: brand.metaTitle || "",
+        metaDescription: brand.metaDescription || "",
         logo: brand.logo || "",
         isActive: brand.isActive ?? true,
         showOnLanding: brand.showOnLanding ?? false,
@@ -156,8 +161,21 @@ export function BrandForm({ id }: { id?: string }) {
                 )}
               </div>
 
+              {/* Meta Title */}
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#4B2E2B]">
+                  <Search className="h-3.5 w-3.5 text-[#A67B5B]" />
+                  Meta Title
+                </label>
+                <Input
+                  type="text"
+                  {...register("metaTitle")}
+                  className="h-auto rounded-2xl border border-[#D4BFAA] bg-[#FCFAF8] px-5 py-3 shadow-none focus-visible:ring-0"
+                />
+              </div>
+
               {/* Slug */}
-              <div className="md:col-span-2">
+              <div>
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#4B2E2B]">
                   <Globe className="h-3.5 w-3.5 text-[#A67B5B]" />
                   {isEdit ? "URL Slug (Read-only)" : "URL Slug"}
@@ -167,6 +185,17 @@ export function BrandForm({ id }: { id?: string }) {
                   {...register("slug")}
                   readOnly
                   className="h-auto cursor-not-allowed rounded-2xl border border-[#D4BFAA] bg-[#F3EEEA] px-5 py-3 font-mono text-xs text-[#8C6A5E] shadow-none focus-visible:ring-0"
+                />
+              </div>
+
+              {/* Meta Description */}
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-semibold text-[#4B2E2B]">
+                  Meta Description
+                </label>
+                <Textarea
+                  {...register("metaDescription")}
+                  className="min-h-[80px] rounded-2xl border border-[#D4BFAA] bg-[#FCFAF8] px-5 py-3 shadow-none focus-visible:ring-0"
                 />
               </div>
             </div>

@@ -78,16 +78,22 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="bg-[#240226] text-[#D9C5B2] py-2.5 px-6 text-center text-[11px] tracking-[0.2em] uppercase font-bold border-b border-white/5 relative z-[60]">
+      <div className="bg-linear-to-r from-[#360718] via-[#8E1454] to-[#360718] text-[#F6C9DE] py-2.5 px-6 text-center text-[11px] tracking-[0.2em] uppercase font-bold border-b border-[#F49AC2]/10 relative z-60">
         Your favorite online skincare shop
       </div>
 
       <header
-        className={`w-full sticky top-0 z-50 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) border-b ${
+        className={`w-full sticky top-0 z-50 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) border-b overflow-hidden ${
           isScrolled
-            ? "bg-[#300332]/90 backdrop-blur-xl py-2 border-white/10 shadow-2xl"
-            : "bg-[#300332] py-5 border-transparent"
+            ? "bg-linear-to-r from-[#360718]/95 via-[#8E1454]/95 to-[#360718]/95 backdrop-blur-xl py-2 border-[#F49AC2]/10 shadow-[0_15px_40px_-12px_rgba(142,20,84,0.6)]"
+            : "bg-linear-to-r from-[#360718] via-[#8E1454] to-[#360718] py-5 border-transparent"
         }`}>
+        {/* Glossy diagonal light sweep, like the reference banner shade */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -inset-y-1/2 -left-1/4 w-1/3 rotate-[20deg] bg-linear-to-r from-transparent via-white/15 to-transparent blur-2xl" />
+        </div>
+        {/* Premium hairline sheen at the base of the header */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#D9C5B2]/50 to-transparent" />
         <div className="max-w-7xl mx-auto px-4 md:px-10">
           <div className="flex items-center justify-between h-12 md:h-14 gap-4">
             {/* Logo Container with Smooth Scaling */}
@@ -202,7 +208,7 @@ const Navbar = () => {
       </header>
 
       {/* Mobile Bottom Nav - Floating Style for smoothness */}
-      <nav className="lg:hidden fixed bottom-4 left-4 right-4 bg-[#300332]/80 backdrop-blur-xl border border-white/10 z-50 rounded-3xl px-2 shadow-2xl overflow-hidden">
+      <nav className="lg:hidden fixed bottom-4 left-4 right-4 bg-linear-to-r from-[#360718]/90 via-[#8E1454]/90 to-[#360718]/90 backdrop-blur-xl border border-[#F49AC2]/10 z-50 rounded-3xl px-2 shadow-[0_15px_40px_-12px_rgba(142,20,84,0.6)] overflow-hidden">
         <div className="flex justify-around items-center h-16">
           {mobileBottomNav.map((item) => {
             const isActive = pathname === item.path;

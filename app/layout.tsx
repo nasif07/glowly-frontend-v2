@@ -3,8 +3,7 @@ import { Cormorant_Garamond, Montserrat, Hind_Siliguri } from "next/font/google"
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import { AppGoogleOAuthProvider } from "@/providers/google-oauth-provider";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 // Cormorant Garamond is the default serif (maps to --font-sans / body).
@@ -29,14 +28,32 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
-  title: "Glowly",
-  description: "Glowly storefront",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Glowly | Original Skincare Products in Bangladesh",
+    template: `%s | ${SITE_NAME}`,
+  },
+  description:
+    "Glowly BD is committed to providing authentic Korean and international skincare products in Bangladesh with guaranteed genuine quality.",
   icons: {
     icon: [
       { url: "/glowly.svg", type: "image/svg+xml" },
       { url: "/glowly.png", type: "image/png" },
     ],
     apple: "/glowly.png",
+  },
+  openGraph: {
+    siteName: SITE_NAME,
+    type: "website",
+    locale: "en_US",
+    images: [{ url: "/glowlyCover.png" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -52,11 +69,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AppGoogleOAuthProvider>
-          <QueryProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </QueryProvider>
+          <QueryProvider>{children}</QueryProvider>
         </AppGoogleOAuthProvider>
         <Toaster richColors position="top-right" />
       </body>

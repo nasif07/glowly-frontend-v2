@@ -17,9 +17,9 @@ const baseStyles =
   "relative group overflow-hidden py-4 px-5 md:px-9 text-[11px] font-bold uppercase tracking-[0.2rem] md:tracking-[0.4em] rounded-full transition-all duration-1000 active:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2 font-['Cormorant_Garamond']";
 
 const variants: Record<Variant, string> = {
-  // 1. Deep Plum Gradient: Darkest Plum to a Lighter "Grape" center
+  // 1. Rose Gradient: matches the navbar's pink shade
   primary:
-    "bg-gradient-to-br from-[#240226] via-[#300332] to-[#4A0E4D] text-white border border-white/10 shadow-[0_10px_30px_-15px_rgba(48,3,50,0.5)] hover:shadow-[0_15px_40px_-10px_rgba(48,3,50,0.7)]",
+    "bg-linear-to-br from-[#360718] via-[#8E1454] to-[#360718] text-white border border-[#F49AC2]/10 shadow-[0_10px_30px_-15px_rgba(142,20,84,0.5)] hover:shadow-[0_15px_40px_-10px_rgba(142,20,84,0.7)]",
 
   // 2. Oatmeal Glow: Soft Cream to a deeper Sand
   secondary:

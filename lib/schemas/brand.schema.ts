@@ -4,6 +4,8 @@ import { z } from "zod";
 export const brandSchema = z.object({
   name: z.string().min(1, "Brand name is required"),
   slug: z.string().min(1, "Slug is required"),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
   logo: z.string().url().optional().or(z.literal("")),
   isActive: z.boolean().default(true),
   showOnLanding: z.boolean().default(false),

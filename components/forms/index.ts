@@ -6,6 +6,7 @@ export { VerifyOtpForm } from "./verify-otp-form";
 export { ResetPasswordForm } from "./reset-password-form";
 
 // Admin
+export { BlogForm } from "./blog-form";
 export { BrandForm } from "./brand-form";
 export { CategoryForm } from "./category-form";
 export { ProductForm } from "./product-form";

@@ -1,4 +1,5 @@
 import type { ProductsQuery } from "@/types";
+import type { BlogsQuery } from "@/types/blog";
 
 /**
  * Centralised, hierarchical query-key factory.
@@ -31,6 +32,18 @@ export const queryKeys = {
     lists: () => [...queryKeys.brands.all, "list"] as const,
     list: () => [...queryKeys.brands.lists()] as const,
     detail: (id: string) => [...queryKeys.brands.all, "detail", id] as const,
+  },
+  blogs: {
+    all: ["blogs"] as const,
+    lists: () => [...queryKeys.blogs.all, "list"] as const,
+    list: (params: BlogsQuery = {}) =>
+      [...queryKeys.blogs.lists(), params] as const,
+    detail: (id: string) => [...queryKeys.blogs.all, "detail", id] as const,
+  },
+  hero: {
+    all: ["hero"] as const,
+    public: () => [...queryKeys.hero.all, "public"] as const,
+    manage: () => [...queryKeys.hero.all, "manage"] as const,
   },
   orders: {
     all: ["orders"] as const,

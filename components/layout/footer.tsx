@@ -81,7 +81,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-[#300332] text-[#D9C5B2] w-full overflow-hidden">
+    <footer className="bg-linear-to-br from-[#360718] via-[#8E1454] to-[#360718] text-[#D9C5B2] w-full overflow-hidden">
       {/* Top Section */}
       <div className="max-w-7xl mx-auto px-6 pt-10 md:pt-24 pb-16">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-8 md:gap-12 border-b border-[#D9C5B2]/10 pb-16">
@@ -155,7 +155,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-[#240226] py-8 px-6 pb-30 md:pb-10">
+      <div className="bg-linear-to-r from-[#240512] via-[#5C0F3A] to-[#240512] py-8 px-6 pb-30 md:pb-10">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
             <p className="text-[12px] uppercase tracking-widest opacity-40">

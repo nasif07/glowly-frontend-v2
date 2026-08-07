@@ -75,16 +75,16 @@ export default function ProductCard({ product }: { product: Product }) {
           <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1200ms] ease-in-out" />
         </div>
 
-        {/* Quick Add Button */}
-        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-all duration-500 ease-in-out">
+        {/* Quick Add Button — always visible on mobile (no hover state to reveal it there); hover-reveal on md+ */}
+        <div className="absolute inset-x-0 bottom-0 p-2 md:p-4 translate-y-0 md:translate-y-full md:group-hover:translate-y-0 transition-all duration-500 ease-in-out">
           <button
             onClick={handleAddToCart}
             disabled={!product.totalStock || product.totalStock <= 0}
-            className={`w-full py-4 rounded-2xl font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 shadow-xl transition-all text-[10px]
+            className={`w-full py-2.5 md:py-4 rounded-xl md:rounded-2xl font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 shadow-xl transition-all text-[9px] md:text-[10px]
               ${
                 !product.totalStock || product.totalStock <= 0
                   ? "bg-gray-200 text-gray-500 cursor-not-allowed shadow-none"
-                  : "bg-[#300332] text-white hover:bg-[#430446]"
+                  : "bg-linear-to-r from-[#360718] via-[#8E1454] to-[#360718] text-white hover:brightness-110"
               }
             `}
           >

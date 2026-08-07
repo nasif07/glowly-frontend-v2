@@ -8,15 +8,6 @@ export default function Banner() {
   return (
     /* Changed h-screen to py-20 and reduced min-h for a tighter look */
     <section className="relative w-full py-8 md:py-20 md:min-h-[600px] flex items-center overflow-hidden">
-      {/* Decorative floral background */}
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: `url('/path-to-your-floral-pattern.png')`,
-          backgroundSize: "cover",
-        }}
-      />
-
       {/* Background Shape - Adjusted width/height to match new section scale */}
       <div className="absolute top-0 right-0 w-[45%] h-full bg-[#F1E9EA] rounded-l-[160px] hidden lg:block" />
 

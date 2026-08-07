@@ -15,7 +15,7 @@ const baseStyles =
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-gradient-to-br from-[#240226] via-[#300332] to-[#4A0E4D] text-white border border-white/10 shadow-[0_10px_30px_-15px_rgba(48,3,50,0.5)] hover:shadow-[0_15px_40px_-10px_rgba(48,3,50,0.7)]",
+    "bg-linear-to-br from-[#360718] via-[#8E1454] to-[#360718] text-white border border-[#F49AC2]/10 shadow-[0_10px_30px_-15px_rgba(142,20,84,0.5)] hover:shadow-[0_15px_40px_-10px_rgba(142,20,84,0.7)]",
   secondary:
     "bg-gradient-to-br from-[#F1E6EF] via-[#D9C5B2] to-[#C9B7A5] text-[#300332] border border-[#300332]/10 shadow-[0_10px_30px_-15px_rgba(217,197,178,0.4)]",
   outline:

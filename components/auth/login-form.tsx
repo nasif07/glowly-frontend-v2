@@ -2,48 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useGoogleLogin } from "@react-oauth/google";
 import { toast } from "sonner";
-import {
-  Mail,
-  Lock,
-  ArrowRight,
-  AlertCircle,
-  Eye,
-  EyeOff,
-  Sparkles,
-  Zap,
-  ShieldCheck,
-} from "lucide-react";
+import { Mail, Lock, ArrowRight, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 import { useGoogleAuth, useLogin } from "@/hooks/use-auth";
 import { loginSchema, type LoginInput } from "@/lib/schemas";
 import { getErrorMessage } from "@/lib/api-error";
-import { AuthBrandPanel } from "@/components/auth/auth-brand-panel";
+import { AuthDrawer } from "@/components/auth/auth-drawer";
 import { GoogleIcon } from "@/components/forms/google-icon";
-import glowlyColored from "@/public/glowly-colored.png";
-
-const highlights = [
-  {
-    title: "Curated Purity",
-    desc: "Every product is vetted for clinical safety and botanical integrity.",
-    icon: <Sparkles className="h-5 w-5" />,
-  },
-  {
-    title: "Member Privileges",
-    desc: "Unlock early access to seasonal drops and skin consultations.",
-    icon: <Zap className="h-5 w-5" />,
-  },
-  {
-    title: "Secure Sanctuary",
-    desc: "Your data and beauty profile are protected with medical-grade encryption.",
-    icon: <ShieldCheck className="h-5 w-5" />,
-  },
-];
 
 export default function LoginForm() {
   const router = useRouter();
@@ -100,35 +70,8 @@ export default function LoginForm() {
   });
 
   return (
-    <div className="font-montserrat flex min-h-screen overflow-hidden bg-white">
-      <AuthBrandPanel
-        eyebrow="Conscious Beauty Rituals"
-        heading={
-          <>
-            Your journey to <br />{" "}
-            <span className="text-[#D9C5B2] font-light italic">radiance</span>{" "}
-            starts here.
-          </>
-        }
-        highlights={highlights}
-        footer="© 2026 Glowly Conscious Beauty"
-      />
-
-      {/* --- RIGHT SIDE: Login Form --- */}
-      <div className="flex flex-1 items-center justify-center bg-[#FAF9F6] p-8 lg:p-12">
-        <div className="w-full max-w-[420px]">
-          {/* Mobile Logo */}
-          <div className="mb-10 flex justify-center lg:hidden">
-            <Link href="/" className="flex items-center gap-3">
-              <Image
-                src={glowlyColored}
-                alt="Glowly Logo"
-                className="h-16 w-auto"
-              />
-            </Link>
-          </div>
-
-          <div className="mb-10 text-center lg:text-left">
+    <AuthDrawer>
+      <div className="mb-10 text-center">
             <h1 className="mb-3 text-2xl font-semibold text-[#300332] md:text-4xl md:font-bold">
               Welcome Back
             </h1>
@@ -231,9 +174,7 @@ export default function LoginForm() {
                 Register Here
               </Link>
             </p>
-          </form>
-        </div>
-      </div>
-    </div>
+      </form>
+    </AuthDrawer>
   );
 }

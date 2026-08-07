@@ -2,6 +2,8 @@ export interface Category {
   _id: string;
   name: string;
   slug: string;
+  metaTitle?: string;
+  metaDescription?: string;
   image?: string;
   showOnLanding: boolean;
   /** Root categories have `null`; children reference their parent. */

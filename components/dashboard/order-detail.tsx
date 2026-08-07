@@ -1,12 +1,57 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Printer, User, CreditCard, MapPin, Phone, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  ArrowLeft,
+  Printer,
+  User,
+  CreditCard,
+  MapPin,
+  Phone,
+  CheckCircle2,
+  Truck,
+} from "lucide-react";
 
-import { useOrder } from "@/hooks/use-orders";
+import { useOrder, useSendOrderToSteadfast } from "@/hooks/use-orders";
 import { OrderStatusControl } from "@/components/forms/order-status-control";
+import { getErrorMessage } from "@/lib/api-error";
 import Button from "@/components/common/button";
 import type { OrderStatus } from "@/types";
+
+function confirmSendToCourier(onConfirm: () => void) {
+  toast.custom(
+    (id) => (
+      <div className="flex flex-col gap-3 rounded-2xl border border-[#E0C9A6] bg-white p-4 shadow-lg">
+        <p className="text-sm font-semibold text-[#4B2E2B]">
+          Send this order to Steadfast?
+        </p>
+        <p className="-mt-2 text-xs text-gray-500">
+          This creates a real courier consignment using the order&apos;s
+          shipping address and due amount. It can&apos;t be undone from here.
+        </p>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => toast.dismiss(id)}
+            className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium transition-colors hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              toast.dismiss(id);
+              onConfirm();
+            }}
+            className="rounded-lg bg-[#300332] px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-[#4a054d]"
+          >
+            Send Order
+          </button>
+        </div>
+      </div>
+    ),
+    { duration: 8000 },
+  );
+}
 
 const statuses: OrderStatus[] = [
   "pending",
@@ -19,6 +64,17 @@ const statuses: OrderStatus[] = [
 export function OrderDetail({ id }: { id: string }) {
   const router = useRouter();
   const { data: order, isLoading } = useOrder(id);
+  const sendToSteadfast = useSendOrderToSteadfast(id);
+
+  const handleSendToSteadfast = () => {
+    confirmSendToCourier(() => {
+      sendToSteadfast.mutate(undefined, {
+        onSuccess: () => toast.success("Order sent to Steadfast"),
+        onError: (error) =>
+          toast.error(getErrorMessage(error, "Failed to send order to Steadfast")),
+      });
+    });
+  };
 
   if (isLoading) {
     return (
@@ -56,13 +112,34 @@ export function OrderDetail({ id }: { id: string }) {
           </div>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={() => window.print()}
-          className="mt-4 flex items-center gap-2 md:mt-0 print:hidden"
-        >
-          <Printer size={18} /> <span className="font-semibold">Print</span>
-        </Button>
+        <div className="mt-4 flex items-center gap-3 md:mt-0 print:hidden">
+          {order.courier?.consignmentId ? (
+            <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700 uppercase">
+              <Truck size={16} />
+              Sent · {order.courier.trackingCode}
+            </div>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={handleSendToSteadfast}
+              disabled={sendToSteadfast.isPending}
+              className="flex items-center gap-2"
+            >
+              <Truck size={18} />
+              <span className="font-semibold">
+                {sendToSteadfast.isPending ? "Sending..." : "Send to Steadfast"}
+              </span>
+            </Button>
+          )}
+
+          <Button
+            variant="outline"
+            onClick={() => window.print()}
+            className="flex items-center gap-2"
+          >
+            <Printer size={18} /> <span className="font-semibold">Print</span>
+          </Button>
+        </div>
       </div>
 
       {/* Status Section */}

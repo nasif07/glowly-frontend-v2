@@ -14,6 +14,8 @@ import {
   Store,
   Package,
   Truck,
+  Newspaper,
+  Images,
 } from "lucide-react";
 import { useLogout } from "@/hooks/use-auth";
 import glowlyLogo from "@/public/glowly.png";
@@ -21,9 +23,11 @@ import glowlyLogo from "@/public/glowly.png";
 const navItems = [
   { name: "Overview", path: "/dashboard", icon: Home, exact: true },
   { name: "Users", path: "/dashboard/users", icon: User },
+  { name: "Hero Banner", path: "/dashboard/hero", icon: Images },
   { name: "Categories", path: "/dashboard/categories", icon: Box },
   { name: "Brands", path: "/dashboard/brands", icon: Store },
   { name: "Inventory", path: "/dashboard/inventory", icon: Store },
+  { name: "Blog", path: "/dashboard/blog", icon: Newspaper },
   { name: "Orders", path: "/dashboard/orders", icon: Package },
   { name: "Courier", path: "/dashboard/courier", icon: Truck },
   { name: "Profile", path: "/profile", icon: User },
@@ -67,7 +71,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen text-[#300332]">
       {/* Desktop Sidebar */}
-      <aside className="fixed top-0 left-0 z-50 hidden h-full w-64 flex-col bg-[#300332] lg:flex">
+      <aside className="fixed top-0 left-0 z-50 hidden h-full w-64 flex-col bg-linear-to-b from-[#360718] via-[#8E1454] to-[#360718] lg:flex">
         <div className="flex h-full flex-col p-8">
           <Link href="/" className="mb-12 flex items-center gap-3 px-2">
             <Image src={glowlyLogo} alt="Glowly Logo" className="h-auto w-auto" />
@@ -92,13 +96,13 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Mobile Top Bar */}
-      <div className="fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between border-b border-[#D9C5B2]/20 bg-[#300332] px-6 lg:hidden">
+      <div className="fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between border-b border-[#F49AC2]/10 bg-linear-to-r from-[#360718] via-[#8E1454] to-[#360718] px-6 lg:hidden">
         <Link href="/">
           <Image src={glowlyLogo} alt="Glowly Logo" className="h-10 w-auto" />
         </Link>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="rounded-lg bg-[#300332] p-2 text-white"
+          className="rounded-lg bg-[#360718] p-2 text-white"
         >
           {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -106,7 +110,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
       {/* Mobile Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-[999] flex h-full w-72 flex-col bg-[#300332] p-4 transition-transform duration-500 ease-in-out ${
+        className={`fixed top-0 left-0 z-[999] flex h-full w-72 flex-col bg-linear-to-b from-[#360718] via-[#8E1454] to-[#360718] p-4 transition-transform duration-500 ease-in-out ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         } lg:hidden`}
       >
@@ -135,7 +139,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       )}
 
       {/* Main Content */}
-      <main className="min-h-screen flex-1 overflow-y-auto lg:ml-64">
+      <main className="font-montserrat min-h-screen flex-1 overflow-y-auto lg:ml-64">
         <div className="p-6 pt-24 lg:p-10 lg:pt-10">{children}</div>
       </main>
     </div>
