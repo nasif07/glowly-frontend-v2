@@ -67,18 +67,33 @@ export default function Brands() {
           {brands.map((brand, index) => (
             <SwiperSlide key={brand._id || index}>
               <div
-                onClick={() => router.push(`/shop?brand=${brand.name}`)}
-                className="group bg-white border border-stone-200 rounded-xl p-4 md:p-8 flex flex-col items-center justify-center aspect-square transition-all duration-300 hover:border-stone-300 cursor-pointer h-full"
+                role="link"
+                tabIndex={0}
+                aria-label={`Shop ${brand.name}`}
+                onClick={() =>
+                  router.push(`/shop?brand=${encodeURIComponent(brand.name)}`)
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(
+                      `/shop?brand=${encodeURIComponent(brand.name)}`,
+                    );
+                  }
+                }}
+                className="group bg-white border border-stone-200 rounded-xl p-4 md:p-8 flex flex-col items-center justify-center aspect-square transition-all duration-300 hover:border-stone-300 cursor-pointer h-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#300332]"
               >
                 <div className="relative w-full h-full flex items-center justify-center">
                   <div className="relative h-[70%] w-full">
-                    <Image
-                      src={brand.logo || "/placeholder-brand.png"}
-                      alt={brand.name}
-                      fill
-                      sizes="(max-width: 640px) 50vw, 20vw"
-                      className="object-contain md:grayscale group-hover:grayscale-0 transition-all duration-500 md:opacity-70 group-hover:opacity-100"
-                    />
+                    {brand.logo && (
+                      <Image
+                        src={brand.logo}
+                        alt={brand.name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 20vw"
+                        className="object-contain md:grayscale group-hover:grayscale-0 transition-all duration-500 md:opacity-70 group-hover:opacity-100"
+                      />
+                    )}
                   </div>
                 </div>
 

@@ -93,20 +93,38 @@ export default function Categories() {
           {categories.slice(0, 4).map((category, index) => (
             <div
               key={category._id || index}
-              onClick={() => router.push(`/shop?category=${category.name}`)}
-              className={`group relative overflow-hidden rounded-xl md:rounded-2xl cursor-pointer bg-[#D9C5B2] transition-all duration-700 ${getLayoutStyles(
+              role="link"
+              tabIndex={0}
+              aria-label={`Shop ${category.name}`}
+              onClick={() =>
+                router.push(
+                  `/shop?category=${encodeURIComponent(category.name)}`,
+                )
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  router.push(
+                    `/shop?category=${encodeURIComponent(category.name)}`,
+                  );
+                }
+              }}
+              className={`group relative overflow-hidden rounded-xl md:rounded-2xl cursor-pointer bg-[#D9C5B2] transition-all duration-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#300332] ${getLayoutStyles(
                 categories.length,
                 index,
               )}`}
             >
-              {/* Image with subtle zoom */}
-              <Image
-                src={category.image || "/placeholder.jpg"}
-                alt={category.name}
-                fill
-                sizes="(max-width: 768px) 50vw, 25vw"
-                className="object-cover object-center transition-transform duration-[1.5s] ease-out group-hover:scale-105"
-              />
+              {/* Image with subtle zoom — the tile's own bg stands in when a
+                  category has no image (there is no placeholder asset). */}
+              {category.image && (
+                <Image
+                  src={category.image}
+                  alt={category.name}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="object-cover object-center transition-transform duration-[1.5s] ease-out group-hover:scale-105"
+                />
+              )}
 
               {/* Modern Minimal Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#300332]/90 via-[#300332]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>

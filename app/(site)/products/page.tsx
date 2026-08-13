@@ -4,7 +4,10 @@ import ProductCardSkeleton from "@/components/products/product-card-skeleton";
 
 export const metadata = {
   title: "Shop",
-  alternates: { canonical: "/products" },
+  // /products and /shop render the identical listing. /shop is the canonical
+  // storefront (it's what the navbar, home and sitemap all point at), so this
+  // alias points there rather than competing with it for the same content.
+  alternates: { canonical: "/shop" },
   description:
     "Buy trusted skincare products directly from global origins. Trending serums, moisturizers & routines for radiant skin in Bangladesh.",
 };

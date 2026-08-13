@@ -32,6 +32,13 @@ export function NavSearch({ isMobileOpen, onNavigate }: NavSearchProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // `autoFocus` only fires on mount, and this component is permanently mounted
+  // — so opening the mobile drawer never actually focused the field.
+  useEffect(() => {
+    if (isMobileOpen) inputRef.current?.focus();
+  }, [isMobileOpen]);
 
   const term = useDebouncedValue(search.trim(), 300);
   const enabled = term.length >= MIN_QUERY;
@@ -108,8 +115,9 @@ export function NavSearch({ isMobileOpen, onNavigate }: NavSearchProps) {
     >
       <form onSubmit={handleSubmit} className="group relative w-full">
         <input
+          ref={inputRef}
           type="text"
-          autoFocus={isMobileOpen}
+          aria-label="Search products"
           placeholder="Search products..."
           value={search}
           onChange={(e) => {

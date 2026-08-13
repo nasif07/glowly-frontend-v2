@@ -82,8 +82,17 @@ export function TrackOrderForm() {
               {orders.map((ord) => (
                 <div
                   key={ord._id}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View order ${ord.orderId?.toUpperCase() || "details"}`}
                   onClick={() => setSelectedOrder(ord)}
-                  className="group flex cursor-pointer items-center justify-between rounded-2xl border border-stone-200 bg-white p-5 transition-all hover:border-stone-800"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setSelectedOrder(ord);
+                    }
+                  }}
+                  className="group flex cursor-pointer items-center justify-between rounded-2xl border border-stone-200 bg-white p-5 transition-all hover:border-stone-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-800"
                 >
                   <div className="space-y-1">
                     <p className="text-sm font-bold tracking-tight text-stone-900">

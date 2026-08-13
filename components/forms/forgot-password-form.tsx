@@ -38,17 +38,17 @@ export function ForgotPasswordForm() {
   };
 
   return (
-    <div className="font-jakarta flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center">
       <section className="max-w-md max-md:mx-4">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="rounded-2xl border border-border px-5 py-10 shadow-[0px_4px_25px_0px_rgba(0,0,0,0.05)] md:px-6"
           >
-            <h1 className="text-[18px] font-semibold text-secondary md:text-2xl">
+            <h1 className="text-[18px] font-semibold text-foreground md:text-2xl">
               Forget Password
             </h1>
-            <p className="text-tertiary py-3 text-xs md:py-4 md:text-sm">
+            <p className="py-3 text-xs text-muted-foreground md:py-4 md:text-sm">
               Enter your email, and we&apos;ll send you simple steps to reset
               your password.
             </p>
@@ -68,7 +68,7 @@ export function ForgotPasswordForm() {
                     id="email"
                     type="email"
                     {...field}
-                    className="h-[48px] w-full rounded-[8px] border-[1px] border-border bg-background-secondary pl-4 shadow-none outline-none focus-visible:ring-0 md:h-[56px]"
+                    className="h-[48px] w-full rounded-[8px] border-[1px] border-border bg-muted pl-4 shadow-none outline-none focus-visible:ring-0 md:h-[56px]"
                   />
                   {fieldState.error && (
                     <p className="mt-1 text-xs text-red-600">

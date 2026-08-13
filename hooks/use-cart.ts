@@ -66,7 +66,12 @@ export const useCartStore = create<CartState>((set) => ({
           cartId,
           _id: product._id,
           title: product.title,
-          price: product.discountPrice || product.price || variant?.price || 0,
+          // A variant's own price wins when it is set. The admin product form
+          // seeds each variant with the product's price, so this only differs
+          // when an admin deliberately priced a variant apart — previously
+          // that variant was still charged at the base price.
+          price:
+            variant?.price || product.discountPrice || product.price || 0,
           image: product.images?.[0]?.url,
           variant,
           quantity,

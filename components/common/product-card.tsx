@@ -41,10 +41,27 @@ export default function ProductCard({ product }: { product: Product }) {
     toast.success(`${product.title} added to ritual`, { style: toastStyle });
   };
 
+  const openProduct = () =>
+    router.push(`/products/${product.slug || product._id}`);
+
   return (
+    // Card-wide click target. It can't be an <a> without nesting the Quick Add
+    // button inside it, so it carries link semantics and keyboard handling
+    // instead. `e.target === e.currentTarget` keeps Enter/Space on the inner
+    // button from also navigating.
     <div
-      onClick={() => router.push(`/products/${product.slug || product._id}`)}
-      className="group relative cursor-pointer bg-white rounded p-1.5 md:p-3 border border-stone-200 transition-all duration-500 hover:-translate-y-2"
+      role="link"
+      tabIndex={0}
+      aria-label={product.title}
+      onClick={openProduct}
+      onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openProduct();
+        }
+      }}
+      className="group relative cursor-pointer bg-white rounded p-1.5 md:p-3 border border-stone-200 transition-all duration-500 hover:-translate-y-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#300332]"
     >
       {/* Product Image Container */}
       <div className="relative aspect-[4/5] overflow-hidden rounded bg-[#FAF9F6]">
@@ -62,13 +79,17 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
         )}
 
-        <Image
-          src={product.images?.[0]?.url || "/placeholder.jpg"}
-          alt={product.images?.[0]?.altText || product.title}
-          fill
-          sizes="(max-width: 768px) 50vw, 20vw"
-          className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110"
-        />
+        {/* No placeholder asset exists, and pointing next/image at a missing
+            file 500s the optimizer — fall back to the tinted container above. */}
+        {product.images?.[0]?.url && (
+          <Image
+            src={product.images[0].url}
+            alt={product.images[0].altText || product.title}
+            fill
+            sizes="(max-width: 768px) 50vw, 20vw"
+            className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110"
+          />
+        )}
 
         {/* The Shine Streak */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none">

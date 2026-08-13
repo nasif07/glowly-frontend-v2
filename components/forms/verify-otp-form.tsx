@@ -7,12 +7,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import { verifyOtpSchema, type VerifyOtpInput } from "@/lib/schemas";
-import { useVerifyOtp } from "@/hooks/use-auth";
+import { useForgotPassword, useVerifyOtp } from "@/hooks/use-auth";
+import { getErrorMessage } from "@/lib/api-error";
 import { Form } from "@/components/ui/form";
 
 export function VerifyOtpForm() {
   const router = useRouter();
   const mutation = useVerifyOtp();
+  // "Resend" re-runs the same request that sent the first code.
+  const resend = useForgotPassword();
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
   const [email, setEmail] = useState("");
@@ -59,6 +62,35 @@ export function VerifyOtpForm() {
     inputsRef.current[Math.min(index + pasted.length, 5)]?.focus();
   };
 
+  /** Move focus back a box when backspacing out of an empty one. */
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    if (e.key === "Backspace" && !digits[index] && index > 0) {
+      e.preventDefault();
+      const next = [...digits];
+      next[index - 1] = "";
+      commit(next);
+      inputsRef.current[index - 1]?.focus();
+    }
+  };
+
+  const handleResend = () => {
+    if (!email) {
+      toast.error("No email on file — start again from Forgot Password.");
+      return;
+    }
+    resend.mutate(
+      { email },
+      {
+        onSuccess: () => toast.success("A new code is on its way."),
+        onError: (error) =>
+          toast.error(getErrorMessage(error, "Could not resend the code")),
+      },
+    );
+  };
+
   const onSubmit = (values: VerifyOtpInput) => {
     mutation.mutate(values, {
       onSuccess: () => {
@@ -74,20 +106,20 @@ export function VerifyOtpForm() {
   };
 
   return (
-    <div className="font-jakarta flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full max-w-md rounded-2xl border border-border px-5 py-10 shadow-[0px_4px_25px_0px_rgba(0,0,0,0.05)] md:px-6"
         >
-          <h2 className="mb-4 text-center text-2xl font-semibold text-secondary">
+          <h2 className="mb-4 text-center text-2xl font-semibold text-foreground">
             Verify your OTP
           </h2>
-          <p className="text-tertiary mb-8 text-center text-sm">
+          <p className="mb-8 text-center text-sm text-muted-foreground">
             We just sent a 6-digit code to <br />
             {email}, enter it below
           </p>
-          <p className="text-tertiary mb-2 text-sm">Code</p>
+          <p className="mb-2 text-sm text-muted-foreground">Code</p>
           <div className="mb-2 flex items-center gap-2">
             {Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="flex items-center">
@@ -98,9 +130,12 @@ export function VerifyOtpForm() {
                   value={digits[index]}
                   maxLength={1}
                   inputMode="numeric"
+                  autoComplete={index === 0 ? "one-time-code" : "off"}
+                  aria-label={`Digit ${index + 1} of 6`}
                   onChange={(e) => handleInput(e.target.value, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
                   onPaste={(e) => handlePaste(e, index)}
-                  className="h-[42px] w-[42px] rounded-sm bg-background-secondary text-center text-xl outline-none sm:h-[50px] sm:w-[50px]"
+                  className="h-[42px] w-[42px] rounded-sm border border-border bg-muted text-center text-xl outline-none focus:border-ring sm:h-[50px] sm:w-[50px]"
                 />
                 {index === 2 && (
                   <span className="mx-1 text-sm text-[#191C4D]">-</span>
@@ -109,16 +144,21 @@ export function VerifyOtpForm() {
             ))}
           </div>
 
-          <p className="text-tertiary mt-2 text-xs">This field is required</p>
+          {form.formState.errors.otp && (
+            <p className="mt-2 text-xs text-red-600">
+              {form.formState.errors.otp.message}
+            </p>
+          )}
 
-          <p className="text-tertiary my-6 text-center text-xs">
+          <p className="my-6 text-center text-xs text-muted-foreground">
             Don&apos;t see a code?{" "}
             <button
               type="button"
-              onClick={() => toast("Resent!")}
-              className="font-medium text-[#00A46B]"
+              onClick={handleResend}
+              disabled={resend.isPending}
+              className="font-medium text-[#00A46B] disabled:opacity-50"
             >
-              Resend to email
+              {resend.isPending ? "Sending..." : "Resend to email"}
             </button>
           </p>
 

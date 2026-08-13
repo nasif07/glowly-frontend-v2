@@ -210,9 +210,15 @@ const InputField = function InputField({
   label: string;
   error?: string;
 }) {
+  // `name` comes from react-hook-form's register(), so it's a stable per-field
+  // id — without one the label was floating free of its input.
+  const fieldId = `profile-${props.name ?? label.replace(/\s+/g, "-").toLowerCase()}`;
   return (
     <div className="space-y-3">
-      <label className="ml-1 text-[10px] font-bold tracking-[0.2em] text-[#300332]/40 uppercase">
+      <label
+        htmlFor={fieldId}
+        className="ml-1 block text-[10px] font-bold tracking-[0.2em] text-[#300332]/40 uppercase"
+      >
         {label}
       </label>
       <div className="group relative">
@@ -220,9 +226,11 @@ const InputField = function InputField({
           {icon}
         </span>
         <input
+          id={fieldId}
           ref={ref}
           {...props}
           readOnly={readOnly}
+          aria-invalid={!!error}
           className={`w-full rounded-2xl border py-4 pr-4 pl-12 text-sm outline-none transition-all duration-300 ${
             readOnly
               ? "cursor-not-allowed border-[#300332]/5 bg-[#FAF9F6] text-[#300332]/30 italic"
