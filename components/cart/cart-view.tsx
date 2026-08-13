@@ -45,13 +45,15 @@ export default function CartView() {
                   className="flex items-center gap-3 sm:gap-6 bg-white p-3 sm:p-4 rounded-2xl border border-[#EFEBE9]"
                 >
                   <div className="relative h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-xl bg-[#F5F1EE]">
-                    <Image
-                      src={item.image || "/placeholder.jpg"}
-                      alt={item.title}
-                      fill
-                      sizes="96px"
-                      className="object-cover"
-                    />
+                    {item.image && (
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        sizes="96px"
+                        className="object-cover"
+                      />
+                    )}
                   </div>
 
                   {/* INFO */}

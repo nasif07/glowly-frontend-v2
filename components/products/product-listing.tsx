@@ -205,7 +205,12 @@ export default function ProductListing() {
     );
   };
 
-  const FilterContent = () => (
+  /**
+   * Held as an element, not declared as a component. Declaring it inline gave
+   * React a brand-new component type on every render, so the whole panel — the
+   * price Range slider included — unmounted and remounted mid-interaction.
+   */
+  const filterContent = (
     <div className="space-y-4 md:space-y-6 font-montserrat z-50">
       <button
         onClick={resetFilters}
@@ -357,7 +362,7 @@ export default function ProductListing() {
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 pb-24 scrollbar-hide">
-          <FilterContent />
+          {filterContent}
         </div>
       </div>
 
@@ -371,7 +376,7 @@ export default function ProductListing() {
 
         <div className="flex flex-col lg:flex-row gap-10">
           <aside className="hidden lg:block w-72 sticky top-24 self-start">
-            <FilterContent />
+            {filterContent}
           </aside>
 
         <main className="flex-1">
@@ -389,6 +394,7 @@ export default function ProductListing() {
               {products.length} Products
             </Badge>
             <select
+              aria-label="Sort products"
               value={activeSort}
               onChange={(e) => {
                 const p = new URLSearchParams(searchParams.toString());

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -73,13 +74,36 @@ const labelStyle =
 const inputBaseStyle =
   "w-full px-4 py-3.5 bg-[#FAF9F6] border border-[#EFEBE9] rounded-xl text-base font-medium focus:border-[#A1887F] outline-none transition-colors";
 
+/**
+ * Validation message for a field. Without these the form fails silently —
+ * `handleSubmit` just refuses to fire and nothing on screen explains why.
+ * Same treatment the login/register forms use.
+ */
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p className="mt-1.5 flex items-center gap-1 text-xs font-bold text-rose-500 uppercase">
+      <AlertCircle size={12} /> {message}
+    </p>
+  );
+}
+
 export function CheckoutForm() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
-  const subtotal = useCartSubtotal();
+  const storedSubtotal = useCartSubtotal();
   const createOrder = useCreateOrder();
   const { user } = useAuth();
+
+  // The cart store reads localStorage at module scope, so the server renders an
+  // empty summary while the client's very first render already has the items.
+  // Gate the rendered figures on mount — the same guard CartView uses.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const cartItems = mounted ? items : [];
+  const subtotal = mounted ? storedSubtotal : 0;
 
   const locations = useMemo(() => allLocation(), []);
 
@@ -113,7 +137,13 @@ export function CheckoutForm() {
     },
   });
 
-  const { register, handleSubmit, watch, setValue } = form;
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = form;
 
   const city = watch("city");
   const enteredAdvance = watch("advanceAmount");
@@ -134,8 +164,15 @@ export function CheckoutForm() {
     return district ? district.thana.filter((t) => t.trim() !== "") : [];
   }, [city, locations]);
 
+  // Set the moment an order succeeds, before the cart is cleared. Without it,
+  // clearing the cart re-runs the guard below, which then races the redirect to
+  // /order-success and lands the customer on /shop with an "empty cart" error
+  // immediately after they paid.
+  const orderPlaced = useRef(false);
+
   // Redirect out of an empty cart, matching the original guard.
   useEffect(() => {
+    if (!mounted || orderPlaced.current) return;
     if (items.length === 0) {
       toast.error("Your cart is empty");
       router.push("/shop");
@@ -144,7 +181,7 @@ export function CheckoutForm() {
     }
     // Fire once per checkout session — items/subtotal don't change on this page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items.length, router]);
+  }, [mounted, items.length, router]);
 
   const totalWithShipping = subtotal + DELIVERY_CHARGE;
   const dueAmount = totalWithShipping - advanceAmount;
@@ -193,6 +230,7 @@ export function CheckoutForm() {
 
     createOrder.mutate(parsed.data, {
       onSuccess: (order) => {
+        orderPlaced.current = true;
         trackPurchase(order, user);
         toast.success("Order placed successfully!");
         clearCart();
@@ -202,24 +240,26 @@ export function CheckoutForm() {
     });
   };
 
+  /** Zod rejected the form — say so, since the errors can be below the fold. */
+  const onInvalid = () =>
+    toast.error("Please complete the highlighted fields.");
+
   return (
     <div className="px-4 py-6 text-[#2D1B14] sm:px-6 sm:py-10">
       <div className="mx-auto max-w-7xl">
         {/* Breadcrumb */}
         <div className="mb-6 flex items-center gap-2 text-base font-bold text-[#8D6E63]">
-          <span
-            className="cursor-pointer hover:text-black"
-            onClick={() => router.push("/cart")}
-          >
+          <Link href="/cart" className="cursor-pointer hover:text-black">
             Cart
-          </span>
+          </Link>
           <ChevronRight size={16} />
           <span className="font-extrabold text-black">Checkout</span>
         </div>
 
         <Form {...form}>
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
+            noValidate
             className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12"
           >
             <div className="space-y-6 lg:col-span-7">
@@ -232,42 +272,49 @@ export function CheckoutForm() {
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                   {/* Full Name */}
                   <div className="md:col-span-2">
-                    <label className={labelStyle}>Full Name</label>
+                    <label className={labelStyle} htmlFor="checkout-name">Full Name</label>
                     <div className="relative">
                       <User
                         className="absolute top-1/2 left-4 -translate-y-1/2 text-[#A1887F]"
                         size={20}
                       />
                       <input
+                        id="checkout-name"
                         {...register("name")}
                         placeholder="Enter your full name"
                         className={`${inputBaseStyle} pl-11`}
                       />
                     </div>
+                    <FieldError message={errors.name?.message} />
                   </div>
 
                   {/* Phone */}
                   <div className="md:col-span-2">
-                    <label className={labelStyle}>Phone Number</label>
+                    <label className={labelStyle} htmlFor="checkout-phone">Phone Number</label>
                     <div className="font-montserrat relative">
                       <Phone
                         className="absolute top-1/2 left-4 -translate-y-1/2 text-[#A1887F]"
                         size={20}
                       />
                       <input
-                        type="number"
+                        id="checkout-phone"
+                        type="tel"
+                        inputMode="numeric"
+                        autoComplete="tel"
                         {...register("phone")}
                         placeholder="01XXX-XXXXXX"
                         className={`${inputBaseStyle} pl-11`}
                       />
                     </div>
+                    <FieldError message={errors.phone?.message} />
                   </div>
 
                   {/* District */}
                   <div>
-                    <label className={labelStyle}>District</label>
+                    <label className={labelStyle} htmlFor="checkout-city">District</label>
                     <div className="relative">
                       <select
+                        id="checkout-city"
                         {...register("city")}
                         onChange={(e) => {
                           setValue("city", e.target.value);
@@ -286,13 +333,15 @@ export function CheckoutForm() {
                         <ChevronRight size={16} className="rotate-90 text-[#A1887F]" />
                       </div>
                     </div>
+                    <FieldError message={errors.city?.message} />
                   </div>
 
                   {/* Thana */}
                   <div>
-                    <label className={labelStyle}>Thana / Upazila</label>
+                    <label className={labelStyle} htmlFor="checkout-thana">Thana / Upazila</label>
                     <div className="relative">
                       <select
+                        id="checkout-thana"
                         {...register("thana")}
                         disabled={!city}
                         className={`${inputBaseStyle} cursor-pointer appearance-none disabled:bg-gray-100 disabled:opacity-50`}
@@ -310,17 +359,20 @@ export function CheckoutForm() {
                         <ChevronRight size={16} className="rotate-90 text-[#A1887F]" />
                       </div>
                     </div>
+                    <FieldError message={errors.thana?.message} />
                   </div>
 
                   {/* Address */}
                   <div className="md:col-span-2">
-                    <label className={labelStyle}>Full Delivery Address</label>
+                    <label className={labelStyle} htmlFor="checkout-address">Full Delivery Address</label>
                     <textarea
+                      id="checkout-address"
                       {...register("address")}
                       placeholder="House #, Road #, Area details..."
                       rows={2}
                       className={inputBaseStyle}
                     />
+                    <FieldError message={errors.address?.message} />
                   </div>
                 </div>
               </div>
@@ -361,30 +413,37 @@ export function CheckoutForm() {
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                       <div>
-                        <label className={labelStyle}>Advance Paid (৳)</label>
+                        <label className={labelStyle} htmlFor="checkout-advance">Advance Paid (৳)</label>
                         <input
+                          id="checkout-advance"
                           type="number"
                           min={minAdvance}
                           {...register("advanceAmount")}
                           className="font-montserrat w-full rounded-xl border border-[#EFEBE9] bg-[#FAF9F6] px-4 py-3 text-base font-medium outline-none focus:border-[#A1887F]"
                         />
+                        <FieldError message={errors.advanceAmount?.message} />
                       </div>
                       <div>
-                        <label className={labelStyle}>Your bKash Number</label>
+                        <label className={labelStyle} htmlFor="checkout-sender">Your bKash Number</label>
                         <input
-                          type="number"
+                          id="checkout-sender"
+                          type="tel"
+                          inputMode="numeric"
                           {...register("senderNumber")}
                           placeholder="018XXXXXXXX"
                           className="font-montserrat w-full rounded-xl border border-[#EFEBE9] bg-[#FAF9F6] px-4 py-3 text-base font-medium outline-none focus:border-[#A1887F]"
                         />
+                        <FieldError message={errors.senderNumber?.message} />
                       </div>
                       <div>
-                        <label className={labelStyle}>Transaction ID</label>
+                        <label className={labelStyle} htmlFor="checkout-trx">Transaction ID</label>
                         <input
+                          id="checkout-trx"
                           {...register("transactionId")}
                           placeholder="TRX123456"
                           className="font-montserrat w-full rounded-xl border border-[#EFEBE9] bg-[#FAF9F6] px-4 py-3 text-base font-medium uppercase outline-none focus:border-[#A1887F]"
                         />
+                        <FieldError message={errors.transactionId?.message} />
                       </div>
                     </div>
                   </>
@@ -416,8 +475,8 @@ export function CheckoutForm() {
                 </h2>
 
                 <div className="custom-scrollbar mb-6 max-h-[300px] space-y-4 overflow-y-auto pr-2">
-                  {items.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-4">
+                  {cartItems.map((item) => (
+                    <div key={item.cartId} className="flex items-center gap-4">
                       <div className="relative shrink-0">
                         {item.image ? (
                           // eslint-disable-next-line @next/next/no-img-element

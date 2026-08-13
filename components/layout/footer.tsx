@@ -130,7 +130,13 @@ const Footer = () => {
                         </>
                       );
                       return isExternal ? (
-                        <a key={i} href={link.href} className={className}>
+                        <a
+                          key={i}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={className}
+                        >
                           {content}
                         </a>
                       ) : (
@@ -146,11 +152,16 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Huge Background Text */}
+        {/* Huge Background Text — decorative only. Was an <h1>, which put a
+            second top-level heading on every page and read out to screen
+            readers as real content. */}
         <div className="relative mt-12">
-          <h1 className="text-[14vw] font-serif text-white/[0.03] leading-none pointer-events-none select-none text-center -mb-6">
+          <p
+            aria-hidden="true"
+            className="text-[14vw] font-serif text-white/[0.03] leading-none pointer-events-none select-none text-center -mb-6"
+          >
             GLOWLY
-          </h1>
+          </p>
         </div>
       </div>
 

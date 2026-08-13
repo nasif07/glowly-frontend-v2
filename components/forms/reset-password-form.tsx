@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,13 +22,20 @@ export function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [email, setEmail] = useState("");
+
   const form = useForm<ResetPasswordInput>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: { email: "", newPassword: "", confirmPassword: "" },
   });
 
+  // The address is carried over from the Forgot Password step. Surfacing it
+  // matters: the schema requires it, so without it the form would refuse to
+  // submit with no field on screen to explain why.
   useEffect(() => {
-    form.setValue("email", localStorage.getItem("email") || "");
+    const stored = localStorage.getItem("email") || "";
+    setEmail(stored);
+    form.setValue("email", stored);
   }, [form]);
 
   const onSubmit = (values: ResetPasswordInput) => {
@@ -45,19 +53,31 @@ export function ResetPasswordForm() {
   };
 
   return (
-    <div className="font-jakarta flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center">
       <section className="max-w-md max-md:mx-4">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="rounded-2xl border border-border px-5 py-10 shadow-[0px_4px_25px_0px_rgba(0,0,0,0.05)] md:px-6"
           >
-            <h1 className="text-[18px] font-semibold text-secondary md:text-2xl">
-              Forget Password
+            <h1 className="text-[18px] font-semibold text-foreground md:text-2xl">
+              Reset Password
             </h1>
-            <p className="text-tertiary py-3 text-xs md:py-4 md:text-sm">
-              Enter your email, and we&apos;ll send you simple steps to reset
-              your password.
+            <p className="py-3 text-xs text-muted-foreground md:py-4 md:text-sm">
+              {email ? (
+                <>
+                  Choose a new password for <strong>{email}</strong>.
+                </>
+              ) : (
+                <>
+                  We couldn&apos;t find the email you started with. Please begin
+                  again from{" "}
+                  <Link href="/forget-password" className="underline">
+                    Forgot Password
+                  </Link>
+                  .
+                </>
+              )}
             </p>
             <hr className="mb-6 h-[1px] border-none bg-border md:mb-10" />
 
@@ -77,7 +97,7 @@ export function ResetPasswordForm() {
                       id="newPassword"
                       type={showPassword ? "text" : "password"}
                       {...field}
-                      className="h-[48px] w-full rounded-[8px] border-[1px] border-border bg-background-secondary pr-12 pl-4 shadow-none outline-none focus-visible:ring-0 md:h-[56px]"
+                      className="h-[48px] w-full rounded-[8px] border-[1px] border-border bg-muted pr-12 pl-4 shadow-none outline-none focus-visible:ring-0 md:h-[56px]"
                     />
                     <button
                       type="button"
@@ -112,7 +132,7 @@ export function ResetPasswordForm() {
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       {...field}
-                      className="h-[56px] w-full rounded-[8px] border-[1px] border-border bg-background-secondary pr-12 pl-4 shadow-none outline-none focus-visible:ring-0"
+                      className="h-[56px] w-full rounded-[8px] border-[1px] border-border bg-muted pr-12 pl-4 shadow-none outline-none focus-visible:ring-0"
                     />
                     <button
                       type="button"
@@ -138,9 +158,9 @@ export function ResetPasswordForm() {
             <button
               type="submit"
               className="w-full cursor-pointer rounded-md bg-primary py-4 text-sm font-semibold text-background"
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || !email}
             >
-              {mutation.isPending ? "  Sending..." : "Send"}
+              {mutation.isPending ? "Saving..." : "Reset Password"}
             </button>
           </form>
         </Form>

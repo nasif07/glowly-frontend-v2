@@ -102,13 +102,18 @@ export default function LoginForm({ standalone }: { standalone?: boolean }) {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
-              <label className="ml-1 text-xs font-bold tracking-widest text-[#300332]/60 uppercase">
+              <label
+                htmlFor="login-email"
+                className="ml-1 text-xs font-bold tracking-widest text-[#300332]/60 uppercase"
+              >
                 Email Address
               </label>
               <div className="relative">
                 <Mail className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#300332]/30" />
                 <input
+                  id="login-email"
                   type="email"
+                  autoComplete="email"
                   placeholder="skin@glowly.com"
                   {...register("email")}
                   className="h-12 w-full rounded-xl border border-[#D9C5B2]/50 bg-white pr-4 pl-12 text-base transition-all focus:border-[#300332] focus:ring-1 focus:ring-[#300332] focus:outline-none"
@@ -123,7 +128,10 @@ export default function LoginForm({ standalone }: { standalone?: boolean }) {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between px-1">
-                <label className="text-xs font-bold tracking-widest text-[#300332]/60 uppercase">
+                <label
+                  htmlFor="login-password"
+                  className="text-xs font-bold tracking-widest text-[#300332]/60 uppercase"
+                >
                   Password
                 </label>
                 <Link
@@ -136,7 +144,9 @@ export default function LoginForm({ standalone }: { standalone?: boolean }) {
               <div className="relative">
                 <Lock className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#300332]/30" />
                 <input
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
                   placeholder="••••••••"
                   {...register("password")}
                   className="h-12 w-full rounded-xl border border-[#D9C5B2]/50 bg-white pr-12 pl-12 text-base transition-all focus:border-[#300332] focus:ring-1 focus:ring-[#300332] focus:outline-none"
@@ -144,6 +154,7 @@ export default function LoginForm({ standalone }: { standalone?: boolean }) {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   className="absolute top-1/2 right-4 -translate-y-1/2 text-[#300332]/30 hover:text-[#300332]"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}

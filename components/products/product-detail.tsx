@@ -89,6 +89,14 @@ export default function ProductDetail({ slug }: { slug: string }) {
     ? selectedVariant.stock <= 0
     : product.stockStatus === "Out of Stock";
 
+  // What the cart will actually charge for the current selection — a variant
+  // priced apart from the product must be what the page quotes.
+  const unitPrice =
+    selectedVariant?.price || product.discountPrice || product.price || 0;
+  // Strike the list price only when it really is above what's being charged.
+  const showListPrice =
+    !!product.price && !!product.discountPrice && product.price > unitPrice;
+
   const handleQuantityChange = (type: "plus" | "minus") => {
     if (type === "plus") {
       const maxStock = selectedVariant?.stock || 99;
@@ -187,10 +195,10 @@ export default function ProductDetail({ slug }: { slug: string }) {
               <div className=" gap-2 font-montserrat">
                 <span className="text-[#300332] text-xl md:text-3xl font-semibold md:font-bold">
                   <span className="">৳</span>
-                  {(product.discountPrice || product.price)?.toLocaleString()}
+                  {unitPrice.toLocaleString()}
                 </span>
 
-                {product.price && product.discountPrice ? (
+                {showListPrice ? (
                   <span className="text-[#300332]/30 text-[20px] line-through font-medium ml-2">
                     ৳{product.price.toLocaleString()}
                   </span>

@@ -63,6 +63,9 @@ export default function Faq() {
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                aria-expanded={openIndex === index}
+                aria-controls={`faq-answer-${index}`}
+                id={`faq-question-${index}`}
                 className="w-full px-4 md:px-8 py-3 md:py-6 flex items-center justify-between text-left group"
               >
                 <span
@@ -80,6 +83,9 @@ export default function Faq() {
               </button>
 
               <div
+                id={`faq-answer-${index}`}
+                role="region"
+                aria-labelledby={`faq-question-${index}`}
                 className={`overflow-hidden transition-all duration-500 ease-in-out ${
                   openIndex === index
                     ? "max-h-60 opacity-100"

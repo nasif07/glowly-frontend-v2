@@ -78,7 +78,7 @@ const Navbar = () => {
       <header
         /* No overflow-hidden here — it would clip the search popup. The gloss
            sweep is already clipped by its own wrapper below. */
-        className={`w-full sticky top-0 z-50 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) border-b ${
+        className={`w-full sticky top-0 z-50 transition-all duration-500 border-b ${
           isScrolled
             ? "bg-linear-to-r from-[#360718]/95 via-[#8E1454]/95 to-[#360718]/95 backdrop-blur-xl py-2 border-[#F49AC2]/10 shadow-[0_15px_40px_-12px_rgba(142,20,84,0.6)]"
             : isTransparent

@@ -12,8 +12,10 @@ export default function FeaturedProduct() {
     (product) => product.isFeatured === true,
   );
 
-  // Hide the entire section if no featured products exist
-  if (products.length === 0) {
+  // Hide the entire section if no featured products exist. Checked after
+  // loading, otherwise the empty first render returns null and the skeleton
+  // below can never appear.
+  if (!isLoading && products.length === 0) {
     return null;
   }
 

@@ -116,6 +116,60 @@ export function ImageUploader({
     }
   };
 
+  /**
+   * The file input allows a multi-select, so honour it — reading only
+   * `files[0]` silently dropped every image after the first. Uploaded one at a
+   * time so each result can be appended (and the progress bar stays truthful),
+   * and capped at the remaining slots rather than failing the whole batch.
+   */
+  const handleFiles = async (fileList?: FileList | null) => {
+    if (!fileList?.length) return;
+
+    const selected = Array.from(fileList);
+    if (!multiple) {
+      await handleImageUpload(selected[0]);
+      return;
+    }
+
+    const room = max - images.length;
+    if (room <= 0) {
+      toast.error(`You can upload maximum ${max} images`);
+      return;
+    }
+    if (selected.length > room) {
+      toast.error(`Only ${room} more image(s) can be added`);
+    }
+
+    // `images` is captured per render, so track the growing list locally.
+    let current = images;
+    for (const file of selected.slice(0, room)) {
+      if (!file.type.startsWith("image/")) {
+        toast.error(`${file.name}: only image files are allowed`);
+        continue;
+      }
+      if (file.size > maxSizeKb * 1024) {
+        toast.error(`${file.name}: must be under ${formatSize(maxSizeKb)}`);
+        continue;
+      }
+      try {
+        setUploading(true);
+        setProgress(0);
+        const uploaded = await uploadImage(file, folder, setProgress);
+        keysByUrl.current.set(uploaded.url, uploaded.key);
+        current = [...current, uploaded.url];
+        emit(current);
+      } catch (err) {
+        console.error("Upload failed:", err);
+        toast.error(
+          err instanceof Error ? err.message : `Failed to upload ${file.name}`,
+        );
+      } finally {
+        setUploading(false);
+        setProgress(0);
+      }
+    }
+  };
+
   const handleRemoveImage = (index: number) => {
     emit(images.filter((_, i) => i !== index));
   };
@@ -132,8 +186,7 @@ export function ImageUploader({
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
-          const file = e.dataTransfer.files[0];
-          if (file) handleImageUpload(file);
+          handleFiles(e.dataTransfer.files);
         }}
         onClick={() => inputRef.current?.click()}
       >
@@ -142,7 +195,11 @@ export function ImageUploader({
           type="file"
           accept="image/*"
           multiple={multiple}
-          onChange={(e) => handleImageUpload(e.target.files?.[0])}
+          onChange={(e) => {
+            handleFiles(e.target.files);
+            // Let the same file be re-picked after a failed upload.
+            e.target.value = "";
+          }}
           className="hidden"
         />
 

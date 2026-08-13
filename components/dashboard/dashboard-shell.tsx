@@ -47,7 +47,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const isActive = (path: string, exact = false) =>
     exact ? pathname === path : pathname.startsWith(path);
 
-  const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
+  // Built as a function returning an element rather than a component declared
+  // in the render body — the latter is a new component type on every render,
+  // so the whole nav remounted each time the mobile menu toggled.
+  const navLinks = (mobile = false) => (
     <nav className="font-montserrat flex-1 space-y-1.5 px-2">
       {navItems.map((item) => {
         const active = isActive(item.path, item.exact);
@@ -76,14 +79,16 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       <aside className="fixed top-0 left-0 z-50 hidden h-full w-64 flex-col bg-linear-to-b from-[#360718] via-[#8E1454] to-[#360718] lg:flex">
         <div className="flex h-full flex-col p-8">
           <Link href="/" className="mb-12 flex items-center gap-3 px-2">
-            <Image src={glowlyLogo} alt="Glowly Logo" className="h-auto w-auto" />
+            {/* Constrain by height like every other logo instance — `w-auto`
+                alone renders the 1286px-wide source and overflows the sidebar. */}
+            <Image src={glowlyLogo} alt="Glowly Logo" className="h-12 w-auto" />
           </Link>
 
           <div className="mb-4 px-4 text-[10px] font-bold tracking-[0.3em] text-[#D9C5B2]/30 uppercase">
             Management
           </div>
 
-          <NavLinks />
+          {navLinks()}
 
           <div className="mt-auto border-t border-white/5 pt-6">
             <button
@@ -122,7 +127,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             <X className="text-[#D9C5B2]" size={24} />
           </button>
         </div>
-        <NavLinks mobile />
+        {navLinks(true)}
         <button
           onClick={logout}
           className="mt-auto flex items-center gap-3 px-4 py-3 font-medium text-red-400"
