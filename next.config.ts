@@ -2,9 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Product/brand/category images come from Cloudinary and other remote hosts.
-    // Broad allow-list keeps next/image working with arbitrary backend URLs;
-    // tighten these patterns to your known hosts before production.
+    // New uploads are served from the Cloudflare R2 public domain, but records
+    // created before the migration still point at Cloudinary. Keep the broad
+    // allow-list until those are migrated, then narrow it to the R2 host.
     remotePatterns: [
       { protocol: "https", hostname: "**" },
       { protocol: "http", hostname: "**" },

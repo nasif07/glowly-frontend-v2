@@ -247,10 +247,12 @@ export function BrandForm({ id }: { id?: string }) {
                 label="Brand Logo"
                 required={false}
                 multiple={false}
+                folder="brands"
                 value={watchedLogo}
-                onChange={(url) =>
-                  setValue("logo", url, { shouldValidate: true })
-                }
+                onChange={(url, key) => {
+                  setValue("logo", url, { shouldValidate: true });
+                  setValue("logoKey", key);
+                }}
                 error={errors.logo?.message}
               />
             </div>

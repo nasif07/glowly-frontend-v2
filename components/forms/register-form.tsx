@@ -30,7 +30,7 @@ const errorInput =
 const okInput =
   "h-12 rounded-xl border bg-white pr-4 pl-12 text-base shadow-none transition-all focus:outline-none focus:ring-1 focus-visible:ring-0 border-[#D9C5B2]/50 focus:border-[#300332] focus:ring-[#300332]";
 
-export function RegisterForm() {
+export function RegisterForm({ standalone }: { standalone?: boolean }) {
   const router = useRouter();
   const registerMutation = useRegister();
   const [showPassword, setShowPassword] = useState(false);
@@ -77,7 +77,7 @@ export function RegisterForm() {
   });
 
   return (
-    <AuthDrawer>
+    <AuthDrawer standalone={standalone}>
       <div className="mb-10 text-center">
             <h3 className="mb-3 text-2xl font-semibold text-[#300332] md:text-4xl md:font-bold">
               Join the Community

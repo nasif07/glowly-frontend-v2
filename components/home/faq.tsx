@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, MessageCircle } from "lucide-react";
+import { GlowButton } from "@/components/forms/glow-button";
 
 const faqs = [
   {
@@ -107,15 +108,15 @@ export default function Faq() {
             </p>
           </div>
 
-          <a
+          <GlowButton
             href="https://wa.me/+8801575808878?text=Hello! I have a question about Glowly products."
             target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 bg-[#D9C5B2] text-[#300332] hover:bg-white px-10 py-4 rounded-full text-xs font-bold uppercase tracking-[0.2em] transition-all active:scale-95 relative z-10 font-sans no-underline"
+            variant="secondary"
+            className="z-10"
           >
             <MessageCircle size={18} />
             Chat With Us
-          </a>
+          </GlowButton>
         </div>
       </div>
     </section>

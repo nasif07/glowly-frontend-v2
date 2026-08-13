@@ -10,6 +10,7 @@ export const categorySchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   image: z.string().url().optional().or(z.literal("")),
+  imageKey: z.string().nullable().optional(),
   showOnLanding: z.boolean().default(false),
   parentCategory: z
     .string()

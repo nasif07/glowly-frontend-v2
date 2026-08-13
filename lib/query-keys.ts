@@ -45,6 +45,10 @@ export const queryKeys = {
     public: () => [...queryKeys.hero.all, "public"] as const,
     manage: () => [...queryKeys.hero.all, "manage"] as const,
   },
+  settings: {
+    all: ["settings"] as const,
+    store: () => [...queryKeys.settings.all, "store"] as const,
+  },
   orders: {
     all: ["orders"] as const,
     lists: () => [...queryKeys.orders.all, "list"] as const,

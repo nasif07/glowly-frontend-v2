@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Montserrat, Hind_Siliguri } from "next/font/google";
 import { Toaster } from "sonner";
+import { TopLoader } from "@/components/common/top-loader";
 import { QueryProvider } from "@/providers/query-provider";
 import { AppGoogleOAuthProvider } from "@/providers/google-oauth-provider";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -67,7 +68,11 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${montserrat.variable} ${hindSiliguri.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      {/* Extensions (Grammarly, ColorZilla) add attributes to <body> before
+          React hydrates, which reads as a mismatch. Suppressed here only —
+          it doesn't extend to the app's own markup. */}
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <TopLoader />
         <AppGoogleOAuthProvider>
           <QueryProvider>{children}</QueryProvider>
         </AppGoogleOAuthProvider>

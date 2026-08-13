@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Search,
   ShoppingCart,
@@ -13,10 +13,10 @@ import {
   X,
   Package,
 } from "lucide-react";
+import { NavSearch } from "@/components/layout/nav-search";
 import { useAuth } from "@/hooks/use-auth";
 import { useCartCount } from "@/hooks/use-cart";
 import { useMobileSearch } from "@/hooks/use-ui-store";
-import { trackSearch } from "@/lib/pixel";
 import glowlyLogo from "@/public/glowly.png";
 
 const desktopNav = [
@@ -36,10 +36,8 @@ const mobileBottomNav = [
 const Navbar = () => {
   const { user } = useAuth();
   const pathname = usePathname();
-  const router = useRouter();
 
   const [mounted, setMounted] = useState(false);
-  const [search, setSearch] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
 
   const {
@@ -66,15 +64,10 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleSearch = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (search.trim()) {
-      router.push(`/shop?search=${encodeURIComponent(search.trim())}`);
-      setSearch("");
-      trackSearch(search.trim());
-      setIsMobileSearchOpen(false);
-    }
-  };
+  // Home opens with a full-bleed hero that the header floats over, so keep the
+  // bar transparent until the first scroll. Every other route has a light page
+  // background where white nav text would vanish.
+  const isTransparent = pathname === "/" && !isScrolled;
 
   return (
     <>
@@ -83,17 +76,29 @@ const Navbar = () => {
       </div>
 
       <header
-        className={`w-full sticky top-0 z-50 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) border-b overflow-hidden ${
+        /* No overflow-hidden here — it would clip the search popup. The gloss
+           sweep is already clipped by its own wrapper below. */
+        className={`w-full sticky top-0 z-50 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) border-b ${
           isScrolled
             ? "bg-linear-to-r from-[#360718]/95 via-[#8E1454]/95 to-[#360718]/95 backdrop-blur-xl py-2 border-[#F49AC2]/10 shadow-[0_15px_40px_-12px_rgba(142,20,84,0.6)]"
-            : "bg-linear-to-r from-[#360718] via-[#8E1454] to-[#360718] py-5 border-transparent"
+            : isTransparent
+              ? "bg-transparent py-5 border-transparent"
+              : "bg-linear-to-r from-[#360718] via-[#8E1454] to-[#360718] py-5 border-transparent"
         }`}>
-        {/* Glossy diagonal light sweep, like the reference banner shade */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -inset-y-1/2 -left-1/4 w-1/3 rotate-[20deg] bg-linear-to-r from-transparent via-white/15 to-transparent blur-2xl" />
-        </div>
-        {/* Premium hairline sheen at the base of the header */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#D9C5B2]/50 to-transparent" />
+        {isTransparent ? (
+          /* Scrim only — the hero's own overlay is transparent at the top, so
+             white nav text needs its own shade to stay readable. */
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/45 via-black/20 to-transparent" />
+        ) : (
+          <>
+            {/* Glossy diagonal light sweep, like the reference banner shade */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+              <div className="absolute -inset-y-1/2 -left-1/4 w-1/3 rotate-[20deg] bg-linear-to-r from-transparent via-white/15 to-transparent blur-2xl" />
+            </div>
+            {/* Premium hairline sheen at the base of the header */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#D9C5B2]/50 to-transparent" />
+          </>
+        )}
         <div className="max-w-7xl mx-auto px-4 md:px-10">
           <div className="flex items-center justify-between h-12 md:h-14 gap-4">
             {/* Logo Container with Smooth Scaling */}
@@ -129,23 +134,10 @@ const Navbar = () => {
             {/* Search Section - Smooth Width Transition */}
             <div
               className={`flex items-center transition-all duration-500 ease-in-out ${isMobileSearchOpen ? "flex-1 scale-[1.02]" : "flex-shrink-0"}`}>
-              <form
-                onSubmit={handleSearch}
-                className={`${isMobileSearchOpen ? "flex w-full" : "hidden md:flex"} md:w-64 lg:w-72 relative group`}>
-                <input
-                  type="text"
-                  autoFocus={isMobileSearchOpen}
-                  placeholder="Search products..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 text-[15px] text-white pl-5 pr-12 py-2.5 rounded-2xl transition-all duration-300 focus:outline-none focus:border-[#D9C5B2] focus:bg-white/10 placeholder:text-white/30"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#D9C5B2] transition-transform hover:scale-110">
-                  <Search size={18} strokeWidth={2.5} />
-                </button>
-              </form>
+              <NavSearch
+                isMobileOpen={isMobileSearchOpen}
+                onNavigate={() => setIsMobileSearchOpen(false)}
+              />
 
               {/* Mobile Search/Close Toggle */}
               <div className="md:hidden flex items-center ml-auto">

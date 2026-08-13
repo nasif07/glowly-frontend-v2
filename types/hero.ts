@@ -8,6 +8,8 @@ export interface HeroSlide {
   _id: string;
   type: "image" | "video";
   mediaUrl: string;
+  /** R2 object key behind `mediaUrl`. */
+  mediaKey?: string | null;
   title?: string;
   order: number;
   isActive: boolean;

@@ -1,0 +1,35 @@
+{
+  "name": "Glowly",
+  "description": "Online skincare retailer in Bangladesh offering 100% authentic skincare and beauty products sourced directly from authorized distributors of trusted global brands.",
+  "url": "https://glowlybd.com",
+  "documentation": "https://glowlybd.com/llms.txt",
+  "provider": {
+    "organization": "Glowly",
+    "url": "https://glowlybd.com"
+  },
+  "contact": {
+    "email": "glowlybd@gmail.com",
+    "phone": "+8801575808878",
+    "whatsapp": "https://wa.me/+8801575808878",
+    "location": "Chattogram, Bangladesh"
+  },
+  "areaServed": "BD",
+  "capabilities": {
+    "streaming": false,
+    "authentication": false
+  },
+  "endpoints": {
+    "shop": "https://glowlybd.com/shop",
+    "blog": "https://glowlybd.com/blog",
+    "about": "https://glowlybd.com/about",
+    "contact": "https://glowlybd.com/contact",
+    "transparency": "https://glowlybd.com/transparency",
+    "authenticityVerification": "https://glowlybd.com/authenticity-verification",
+    "trackOrder": "https://glowlybd.com/track-order",
+    "shippingDeliveryPolicy": "https://glowlybd.com/shipping-delivery-policy",
+    "returnExchangePolicy": "https://glowlybd.com/return-exchange-policy",
+    "privacyPolicy": "https://glowlybd.com/privacy-policy",
+    "termsAndConditions": "https://glowlybd.com/terms-condition"
+  },
+  "sitemap": "https://glowlybd.com/sitemap.xml"
+}

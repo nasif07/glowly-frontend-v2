@@ -124,6 +124,7 @@ export interface Blog {
   excerpt: string;
   content: string;
   featuredImage?: string;
+  featuredImageKey?: string | null;
   category?: string;
   tags: string[];
   author?: string;

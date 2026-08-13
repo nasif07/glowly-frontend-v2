@@ -14,6 +14,8 @@ export interface ProductVariant {
 
 export interface ProductImage {
   url: string;
+  /** R2 object key behind `url`. */
+  key?: string | null;
   altText?: string;
 }
 

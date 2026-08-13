@@ -6,5 +6,6 @@ export * from "./category";
 export * from "./hero";
 export * from "./order";
 export * from "./product";
+export * from "./settings";
 export * from "./steadfast";
 export * from "./user";

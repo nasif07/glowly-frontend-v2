@@ -16,6 +16,7 @@ import {
   Truck,
   Newspaper,
   Images,
+  Settings2,
 } from "lucide-react";
 import { useLogout } from "@/hooks/use-auth";
 import glowlyLogo from "@/public/glowly.png";
@@ -30,6 +31,7 @@ const navItems = [
   { name: "Blog", path: "/dashboard/blog", icon: Newspaper },
   { name: "Orders", path: "/dashboard/orders", icon: Package },
   { name: "Courier", path: "/dashboard/courier", icon: Truck },
+  { name: "Settings", path: "/dashboard/settings", icon: Settings2 },
   { name: "Profile", path: "/profile", icon: User },
 ];
 

@@ -5,21 +5,25 @@ import { UploadCloud, X, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-
-const CLOUDINARY_UPLOAD_PRESET =
-  process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+import {
+  uploadImage,
+  formatSize,
+  MAX_UPLOAD_KB,
+  type UploadFolder,
+} from "@/lib/upload";
 
 type SingleProps = {
   multiple?: false;
   value?: string;
-  onChange: (value: string) => void;
+  /** `key` is the R2 object key — store it so the file can be deleted later. */
+  onChange: (value: string, key: string | null) => void;
 };
 
 type MultiProps = {
   multiple: true;
   value?: string[];
-  onChange: (value: string[]) => void;
+  /** `keys` is index-aligned with `value`. */
+  onChange: (value: string[], keys: (string | null)[]) => void;
 };
 
 type ImageUploaderProps = (SingleProps | MultiProps) & {
@@ -27,12 +31,19 @@ type ImageUploaderProps = (SingleProps | MultiProps) & {
   required?: boolean;
   error?: string;
   max?: number;
+  /** R2 folder prefix this control uploads into. */
+  folder: UploadFolder;
+  /** Per-file size cap in KB, checked before the request is sent. */
+  maxSizeKb?: number;
   className?: string;
 };
 
 /**
- * Cloudinary unsigned image uploader, ported from glowly-frontend. Handles both
- * single (string) and multiple (string[]) values with drag & drop + previews.
+ * Image uploader backed by the R2 upload API. Handles both single (string) and
+ * multiple (string[]) values with drag & drop + previews.
+ *
+ * The server converts every upload to WebP under 100KB, so any common image
+ * format is accepted here — the size check below only guards the request.
  */
 export function ImageUploader({
   label = "Image",
@@ -42,10 +53,18 @@ export function ImageUploader({
   error,
   multiple = false,
   max = 5,
+  folder,
+  maxSizeKb = MAX_UPLOAD_KB,
   className,
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Keys for files uploaded in this session, so removals can report them back.
+  const keysByUrl = useRef(new Map<string, string>());
+
+  const requirementHint = `JPG, PNG or WebP · max ${formatSize(maxSizeKb)} · optimised to WebP on upload`;
 
   const images: string[] = multiple
     ? ((value as string[]) ?? [])
@@ -54,15 +73,22 @@ export function ImageUploader({
       : [];
 
   const emit = (next: string[]) => {
-    if (multiple) (onChange as MultiProps["onChange"])(next);
-    else (onChange as SingleProps["onChange"])(next[0] ?? "");
+    const keys = next.map((url) => keysByUrl.current.get(url) ?? null);
+
+    if (multiple) (onChange as MultiProps["onChange"])(next, keys);
+    else (onChange as SingleProps["onChange"])(next[0] ?? "", keys[0] ?? null);
   };
 
   const handleImageUpload = async (file?: File) => {
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Each file must be under 2MB");
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed");
+      return;
+    }
+
+    if (file.size > maxSizeKb * 1024) {
+      toast.error(`Each file must be under ${formatSize(maxSizeKb)}`);
       return;
     }
 
@@ -71,26 +97,22 @@ export function ImageUploader({
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET ?? "");
-
     try {
       setUploading(true);
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
-        { method: "POST", body: formData },
-      );
-      const data = await res.json();
-      if (!data.secure_url) throw new Error("Upload failed");
+      setProgress(0);
+      const uploaded = await uploadImage(file, folder, setProgress);
+      keysByUrl.current.set(uploaded.url, uploaded.key);
 
-      if (multiple) emit([...images, data.secure_url]);
-      else emit([data.secure_url]);
+      if (multiple) emit([...images, uploaded.url]);
+      else emit([uploaded.url]);
     } catch (err) {
       console.error("Upload failed:", err);
-      toast.error("Failed to upload image");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to upload image",
+      );
     } finally {
       setUploading(false);
+      setProgress(0);
     }
   };
 
@@ -133,11 +155,24 @@ export function ImageUploader({
                 : "Upload image"}
             </p>
             <p className="text-[11px] text-[#6B4A3D]">Click or drag & drop</p>
+            <p className="mt-1 text-[11px] font-medium text-[#A67B5B]">
+              {requirementHint}
+            </p>
           </div>
         )}
 
         {uploading && (
-          <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-[#D4BFAA] border-t-[#6B4A3D]" />
+          <div className="w-full max-w-55 text-center">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E8D8C3]">
+              <div
+                className="h-full rounded-full bg-[#6B4A3D] transition-[width] duration-200 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="mt-2 text-[11px] font-medium text-[#6B4A3D]">
+              Uploading… {progress}%
+            </p>
+          </div>
         )}
       </div>
 

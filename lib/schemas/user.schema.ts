@@ -7,6 +7,7 @@ export const profileUpdateSchema = z.object({
   phoneNumber: z.string().optional(),
   address: z.string().optional(),
   profileImage: z.string().url().optional().or(z.literal("")),
+  profileImageKey: z.string().nullable().optional(),
 });
 
 /** PUT /user/:id — admin may only change the role. */
