@@ -244,10 +244,12 @@ export function CategoryForm({ id }: { id?: string }) {
                 label="Collection Cover Image"
                 required={!!isLandingEnabled}
                 multiple={false}
+                folder="categories"
                 value={watchedImage ?? ""}
-                onChange={(url) =>
-                  setValue("image", url, { shouldValidate: true })
-                }
+                onChange={(url, key) => {
+                  setValue("image", url, { shouldValidate: true });
+                  setValue("imageKey", key);
+                }}
                 error={errors.image?.message}
               />
             </div>

@@ -35,20 +35,20 @@ const Footer = () => {
       links: [
         { label: "About us", href: "/about" },
         { label: "Our Transparency", href: "/transparency" },
-        { label: "Terms & Condition", href: "/terms" },
-        { label: "Privacy Policy", href: "/privacy" },
+        { label: "Terms & Condition", href: "/terms-condition" },
+        { label: "Privacy Policy", href: "/privacy-policy" },
         { label: "Contact Us", href: "/contact" },
-        { label: "Blogs", href: "/blogs" },
+        { label: "Blogs", href: "/blog" },
       ],
     },
     {
       title: "Customer Support",
       icon: LifeBuoy,
       links: [
-        { label: "Track Your Order", href: "/orders/track" },
-        { label: "Shipping & Delivery Policy", href: "/shipping-policy" },
-        { label: "Return & Exchange Policy", href: "/return-policy" },
-        { label: "Authenticity Verification", href: "/verify" },
+        { label: "Track Your Order", href: "/track-order" },
+        { label: "Shipping & Delivery Policy", href: "/shipping-delivery-policy" },
+        { label: "Return & Exchange Policy", href: "/return-exchange-policy" },
+        { label: "Authenticity Verification", href: "/authenticity-verification" },
         {
           label: "WhatsApp",
           href: "https://wa.me/+8801575808878?text=Hello! I have a question about Glowly products.",

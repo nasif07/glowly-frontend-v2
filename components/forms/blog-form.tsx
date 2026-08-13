@@ -228,8 +228,12 @@ export function BlogForm({ id }: { id?: string }) {
                   label="Featured Image"
                   required={false}
                   multiple={false}
+                  folder="blog"
                   value={watchedImage}
-                  onChange={(url) => setValue("featuredImage", url, { shouldValidate: true })}
+                  onChange={(url, key) => {
+                    setValue("featuredImage", url, { shouldValidate: true });
+                    setValue("featuredImageKey", key);
+                  }}
                   error={errors.featuredImage?.message}
                 />
               </div>

@@ -15,7 +15,7 @@ import { getErrorMessage } from "@/lib/api-error";
 import { AuthDrawer } from "@/components/auth/auth-drawer";
 import { GoogleIcon } from "@/components/forms/google-icon";
 
-export default function LoginForm() {
+export default function LoginForm({ standalone }: { standalone?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from") || "/";
@@ -70,7 +70,7 @@ export default function LoginForm() {
   });
 
   return (
-    <AuthDrawer>
+    <AuthDrawer standalone={standalone}>
       <div className="mb-10 text-center">
             <h1 className="mb-3 text-2xl font-semibold text-[#300332] md:text-4xl md:font-bold">
               Welcome Back

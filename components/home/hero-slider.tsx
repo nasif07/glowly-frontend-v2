@@ -76,7 +76,9 @@ export default function HeroSlider() {
   const slides = isDemo ? DEMO_SLIDES : hero.slides;
 
   return (
-    <section className="hero-slider relative w-full">
+    // Pulled up by the header's resting height (py-5 + h-12/h-14) so the media
+    // runs behind the transparent bar instead of starting below it.
+    <section className="hero-slider relative -mt-22 w-full md:-mt-24">
       <Swiper
         modules={[Autoplay, Pagination, EffectFade]}
         effect="fade"
@@ -89,7 +91,9 @@ export default function HeroSlider() {
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide._id}>
-            <div className="relative h-[75vh] min-h-[460px] w-full overflow-hidden md:h-[600px]">
+            {/* Heights carry the header offset so the visible hero below the
+                bar keeps its original size. */}
+            <div className="relative h-[calc(75vh+5.5rem)] min-h-137 w-full overflow-hidden md:h-174">
               {/* Media (slow Ken Burns zoom while active) */}
               {slide.type === "video" ? (
                 <video
@@ -113,7 +117,7 @@ export default function HeroSlider() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#1a011c]/80 via-[#1a011c]/30 to-transparent" />
 
               {/* Content (staggered entrance, re-triggers each slide) */}
-              <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-center justify-end px-6 pb-16 text-center md:justify-center md:pb-0">
+              <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-center justify-center px-6 pt-22 text-center md:pt-24">
                 <div className="hero-content max-w-3xl space-y-4 md:space-y-6">
                   {slide.title && (
                     <span className="hero-anim hero-kicker inline-block text-[11px] font-bold tracking-[0.4em] text-[#D9C5B2] uppercase md:text-xs">

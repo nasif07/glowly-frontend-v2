@@ -17,6 +17,7 @@ export const productVariantSchema = z.object({
 
 export const productImageSchema = z.object({
   url: z.string().url(),
+  key: z.string().nullable().optional(),
   altText: z.string().optional().default(""),
 });
 

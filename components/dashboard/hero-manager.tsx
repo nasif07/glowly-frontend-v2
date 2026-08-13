@@ -50,6 +50,9 @@ function SlideForm({
 }) {
   const [type, setType] = useState<"image" | "video">(initial?.type || "image");
   const [mediaUrl, setMediaUrl] = useState(initial?.mediaUrl || "");
+  const [mediaKey, setMediaKey] = useState<string | null>(
+    initial?.mediaKey ?? null,
+  );
   const [title, setTitle] = useState(initial?.title || "");
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
 
@@ -65,7 +68,7 @@ function SlideForm({
       return;
     }
 
-    const payload = { type, mediaUrl, title, isActive };
+    const payload = { type, mediaUrl, mediaKey, title, isActive };
     const opts = {
       onSuccess: () => {
         toast.success(isEdit ? "Slide updated" : "Slide added");
@@ -129,8 +132,9 @@ function SlideForm({
             required
             type={type}
             value={mediaUrl}
-            onChange={({ url, type: detected }) => {
+            onChange={({ url, key, type: detected }) => {
               setMediaUrl(url);
+              setMediaKey(key);
               if (url) setType(detected);
             }}
           />

@@ -39,6 +39,7 @@ export function ProfileForm() {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = form;
 
@@ -100,8 +101,12 @@ export function ProfileForm() {
                   <div className="relative inline-block">
                     <ImageUploader
                       multiple={false}
+                      folder="profile"
                       value={field.value ?? ""}
-                      onChange={field.onChange}
+                      onChange={(url, key) => {
+                        field.onChange(url);
+                        setValue("profileImageKey", key);
+                      }}
                       error={errors.profileImage?.message}
                       className="mx-auto"
                     />

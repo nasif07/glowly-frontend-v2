@@ -207,7 +207,7 @@ export function LoginForm() {
                         Password
                       </label>
                       <Link
-                        href="/forgot-password"
+                        href="/forget-password"
                         className="text-xs font-bold tracking-widest text-[#300332] uppercase hover:underline"
                       >
                         Forgot?
@@ -265,13 +265,13 @@ export function LoginForm() {
 
           {/* Minimal Footer */}
           <div className="mt-16 flex justify-center gap-8 text-[11px] font-bold tracking-[0.2em] text-[#300332]/40 uppercase">
-            <Link href="/privacy" className="transition-colors hover:text-[#300332]">
+            <Link href="/privacy-policy" className="transition-colors hover:text-[#300332]">
               Privacy
             </Link>
-            <Link href="/terms" className="transition-colors hover:text-[#300332]">
+            <Link href="/terms-condition" className="transition-colors hover:text-[#300332]">
               Terms
             </Link>
-            <Link href="/help" className="transition-colors hover:text-[#300332]">
+            <Link href="/contact" className="transition-colors hover:text-[#300332]">
               Support
             </Link>
           </div>

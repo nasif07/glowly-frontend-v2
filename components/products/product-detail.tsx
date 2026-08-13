@@ -170,7 +170,7 @@ export default function ProductDetail({ slug }: { slug: string }) {
           </div>
 
           {/* DETAILS SECTION */}
-          <div className="flex flex-col">
+          <div className="flex flex-col min-w-0">
             <div className="mb-6">
               <p className="text-[13px] uppercase tracking-[0.25em] text-[#A67B5B] font-bold mb-3">
                 {(typeof product.brand === "object" && product.brand?.name) ||
@@ -261,11 +261,11 @@ export default function ProductDetail({ slug }: { slug: string }) {
 
             {/* VARIANTS */}
             {product.variants?.length > 0 && (
-              <div className="mb-4 flex items-center gap-6">
-                <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#A67B5B]">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+                <h3 className="shrink-0 text-[13px] font-bold uppercase tracking-widest text-[#A67B5B]">
                   Available Options
                 </h3>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex min-w-0 flex-wrap gap-3">
                   {product.variants.map((v) => (
                     <Button
                       key={v._id}
@@ -277,9 +277,9 @@ export default function ProductDetail({ slug }: { slug: string }) {
                             ? "secondary"
                             : "outline"
                       }
-                      className={`!px-4 !py-2 !tracking-[0.1em] font-montserrat ${selectedVariant?._id === v._id ? "shadow-lg shadow-[#2D1B14]/20" : ""}`}
+                      className={`max-w-full whitespace-normal text-center leading-snug px-4! py-2! tracking-widest! font-montserrat ${selectedVariant?._id === v._id ? "shadow-lg shadow-[#2D1B14]/20" : ""}`}
                     >
-                      {v.color} {v.size} {v.weight}
+                      {[v.color, v.size, v.weight].filter(Boolean).join(" · ")}
                     </Button>
                   ))}
                 </div>

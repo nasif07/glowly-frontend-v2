@@ -4,6 +4,7 @@ export * from "./brand.schema";
 export * from "./category.schema";
 export * from "./hero.schema";
 export * from "./order.schema";
+export * from "./settings.schema";
 export * from "./product.schema";
 export * from "./steadfast.schema";
 export * from "./user.schema";

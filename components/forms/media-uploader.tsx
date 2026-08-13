@@ -4,13 +4,17 @@ import { useRef, useState } from "react";
 import { UploadCloud, X, Film, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
-const CLOUDINARY_UPLOAD_PRESET =
-  process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+import {
+  uploadImage,
+  uploadVideo,
+  MAX_UPLOAD_KB,
+  MAX_VIDEO_UPLOAD_KB,
+  type UploadFolder,
+} from "@/lib/upload";
 
-// Photos stay small; clips can be larger.
-const IMAGE_MAX_MB = 2;
-const VIDEO_MAX_MB = 50;
+// Photos pass through the API (which compresses them); clips go direct to R2.
+const IMAGE_MAX_MB = MAX_UPLOAD_KB / 1024;
+const VIDEO_MAX_MB = MAX_VIDEO_UPLOAD_KB / 1024;
 
 type MediaType = "image" | "video";
 
@@ -20,14 +24,18 @@ interface MediaUploaderProps {
   value?: string;
   /** Controls the preview + which max size applies. */
   type?: MediaType;
-  onChange: (next: { url: string; type: MediaType }) => void;
+  /** `key` is the R2 object key — store it so the file can be deleted later. */
+  onChange: (next: { url: string; type: MediaType; key: string | null }) => void;
   error?: string;
   className?: string;
+  /** R2 folder prefix this control uploads into. */
+  folder?: UploadFolder;
 }
 
 /**
- * Cloudinary unsigned uploader for a single image OR video (via `auto/upload`).
- * Sibling to ImageUploader — leaves that image-only component untouched.
+ * Uploader for a single image OR video, backed by R2. Images are converted to
+ * WebP under 100KB by the API; videos are PUT straight to the bucket with a
+ * presigned URL, since they exceed the API's request-body limit.
  */
 export function MediaUploader({
   label = "Media",
@@ -37,9 +45,13 @@ export function MediaUploader({
   onChange,
   error,
   className,
+  folder = "hero",
 }: MediaUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // This control keeps its spinner, so progress reports go nowhere.
+  const ignoreProgress = () => {};
 
   const handleUpload = async (file?: File) => {
     if (!file) return;
@@ -57,22 +69,22 @@ export function MediaUploader({
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET ?? "");
-
     try {
       setUploading(true);
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`,
-        { method: "POST", body: formData },
-      );
-      const data = await res.json();
-      if (!data.secure_url) throw new Error("Upload failed");
-      onChange({ url: data.secure_url, type: isVideo ? "video" : "image" });
+      const uploaded = isVideo
+        ? await uploadVideo(file, folder, ignoreProgress)
+        : await uploadImage(file, folder, ignoreProgress);
+
+      onChange({
+        url: uploaded.url,
+        key: uploaded.key,
+        type: isVideo ? "video" : "image",
+      });
     } catch (err) {
       console.error("Upload failed:", err);
-      toast.error("Failed to upload media");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to upload media",
+      );
     } finally {
       setUploading(false);
     }
@@ -143,7 +155,7 @@ export function MediaUploader({
             )}
             <button
               type="button"
-              onClick={() => onChange({ url: "", type })}
+              onClick={() => onChange({ url: "", type, key: null })}
               className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1 text-white opacity-0 shadow-lg transition group-hover:opacity-100"
             >
               <X className="h-3 w-3" />

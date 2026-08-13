@@ -9,9 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
+  // Hard-load fallback; soft navigation is intercepted by
+  // `app/(site)/@modal/(.)register`. See the login page for details.
   return (
     <Suspense>
-      <RegisterForm />
+      <RegisterForm standalone />
     </Suspense>
   );
 }

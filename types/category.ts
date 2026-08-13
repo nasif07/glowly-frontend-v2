@@ -5,6 +5,7 @@ export interface Category {
   metaTitle?: string;
   metaDescription?: string;
   image?: string;
+  imageKey?: string | null;
   showOnLanding: boolean;
   /** Root categories have `null`; children reference their parent. */
   parentCategory?: Category | string | null;

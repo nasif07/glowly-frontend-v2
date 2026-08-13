@@ -1,42 +1,46 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Leaf, Award, Truck, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { ShieldCheck, ScanBarcode, Truck, BadgeCheck } from "lucide-react";
+import { GlowButton } from "@/components/forms/glow-button";
 import bannerImg from "@/public/about-us-banner.jpg";
 
 export const metadata: Metadata = {
-  title: "Your Trusted Skincare Partner",
+  // Absolute: the docs' meta title already contains the brand, so the root
+  // layout's "| Glowly" template would double it up.
+  title: { absolute: "About Glowly | Trusted Authentic Skincare Shop in BD" },
   description:
-    "Glowly BD is committed to providing authentic international skincare products in Bangladesh with guaranteed genuine quality.",
-  alternates: { canonical: "https://glowlybd.com/about" },
+    "Glowly BD is your trusted partner for genuine international skincare in Bangladesh. Sourced directly from global brands with guaranteed quality. Read our story!",
+  alternates: { canonical: "/about" },
   openGraph: {
-    title: "Shop Original Korean & International Skincare Glowly BD",
+    title: "About Glowly | Trusted Authentic Skincare Shop in BD",
     description:
-      "Glowly BD is committed to providing authentic Korean and global skincare products in Bangladesh with guaranteed genuine quality.",
+      "Glowly BD is your trusted partner for genuine international skincare in Bangladesh. Sourced directly from global brands with guaranteed quality.",
     type: "website",
-    url: "https://glowlybd.com/about",
+    url: "/about",
   },
 };
 
 const values = [
   {
-    icon: <Leaf size={28} strokeWidth={1.5} />,
-    title: "Ethical Sourcing",
-    desc: "100% Vegan and cruelty-free botanicals.",
+    icon: <ShieldCheck size={28} strokeWidth={1.5} />,
+    title: "Authorized Sourcing",
+    desc: "Every product comes from an authorized distributor — never a reseller.",
   },
   {
-    icon: <Award size={28} strokeWidth={1.5} />,
-    title: "Clinical Grade",
-    desc: "Dermatologist tested for peak performance.",
+    icon: <ScanBarcode size={28} strokeWidth={1.5} />,
+    title: "Batch Code Verified",
+    desc: "Check the code on your product against the brand's official site.",
+  },
+  {
+    icon: <BadgeCheck size={28} strokeWidth={1.5} />,
+    title: "Checked Before Listing",
+    desc: "If we can't confirm a product is authentic, we don't sell it.",
   },
   {
     icon: <Truck size={28} strokeWidth={1.5} />,
-    title: "Conscious Transit",
-    desc: "Plastic-free, biodegradable packaging.",
-  },
-  {
-    icon: <ShieldCheck size={28} strokeWidth={1.5} />,
-    title: "Pure Integrity",
-    desc: "Zero synthetic fragrances or parabens.",
+    title: "Nationwide Delivery",
+    desc: "We deliver to all districts across Bangladesh.",
   },
 ];
 
@@ -44,94 +48,100 @@ export default function AboutPage() {
   return (
     <div className="bg-white text-[#300332]">
       {/* Hero Section - Rose Gradient Background */}
-      <section className="relative py-20 md:py-32 px-4 md:px-6 bg-linear-to-br from-[#360718] via-[#8E1454] to-[#360718] text-[#D9C5B2] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
-          <span className="text-[10px] uppercase tracking-[0.5em] font-bold mb-6 block text-white/60">
-            Est. 2024
+      <section className="relative overflow-hidden bg-linear-to-br from-[#360718] via-[#8E1454] to-[#360718] px-4 py-20 text-[#D9C5B2] md:px-6 md:py-32">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
+          <span className="mb-6 block text-[10px] font-bold uppercase tracking-[0.5em] text-white/60">
+            Est. 2026
           </span>
-          <h1 className="text-5xl md:text-8xl text-white leading-none mb-8">
-            The Glowly <span className="italic font-light">Story</span>
+          <h1 className="mb-8 text-5xl leading-none text-white md:text-8xl">
+            The Glowly <span className="font-light italic">Story</span>
           </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-xl font-light leading-relaxed opacity-80">
-            A sanctuary where clinical science meets botanical luxury. We are
-            redefining the art of the daily ritual.
+          <p className="mx-auto max-w-2xl text-lg font-light leading-relaxed opacity-80 md:text-xl">
+            Authentic skincare for Bangladesh — sourced directly from authorized
+            distributors, and verifiable down to the batch code.
           </p>
         </div>
         {/* Subtle Organic Shape Overlay */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-          <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-[#D9C5B2] rounded-full blur-[120px]"></div>
+        <div className="pointer-events-none absolute left-0 top-0 h-full w-full opacity-10">
+          <div className="absolute right-[-5%] top-[-10%] h-96 w-96 rounded-full bg-[#D9C5B2] blur-[120px]"></div>
         </div>
       </section>
 
-      {/* Our Philosophy - Two Column */}
-      <section className="max-w-7xl mx-auto py-20 md:py-32 px-6 grid md:grid-cols-2 gap-20 items-center">
+      {/* Our Story - Two Column */}
+      <section className="mx-auto grid max-w-7xl items-center gap-20 px-6 py-20 md:grid-cols-2 md:py-32">
         <div className="relative order-2 md:order-1">
-          <div className="relative aspect-[4/5] bg-[#D9C5B2]/20 rounded-t-full overflow-hidden border border-[#D9C5B2]/30">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-t-full border border-[#D9C5B2]/30 bg-[#D9C5B2]/20">
             <Image
               src={bannerImg}
-              alt="Artisanal Skincare"
+              alt="Authentic skincare products sold by Glowly"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover mix-blend-multiply opacity-90"
+              className="object-cover opacity-90 mix-blend-multiply"
             />
           </div>
-          {/* Floating Stats Badge */}
-          <div className="absolute -bottom-10 -right-6 bg-[#D9C5B2] text-[#300332] p-10 rounded-full shadow-2xl hidden md:flex flex-col items-center justify-center w-48 h-48 border-4 border-white">
-            <p className="text-4xl">10k+</p>
-            <p className="text-[10px] uppercase tracking-widest font-bold text-center mt-1">
-              Radiant Souls
+          {/* Floating Badge */}
+          <div className="absolute -bottom-10 -right-6 hidden h-48 w-48 flex-col items-center justify-center rounded-full border-4 border-white bg-[#D9C5B2] p-10 text-[#300332] shadow-2xl md:flex">
+            <p className="text-4xl">100%</p>
+            <p className="mt-1 text-center text-[10px] font-bold uppercase tracking-widest">
+              Authentic
             </p>
           </div>
         </div>
 
-        <div className="space-y-8 order-1 md:order-2">
+        <div className="order-1 space-y-8 md:order-2">
           <div className="space-y-4">
-            <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-[#300332]/40">
-              Our Philosophy
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#300332]/40">
+              Our Story
             </h2>
-            <h3 className="text-4xl md:text-5xl leading-tight">
-              Purity in every <span className="italic">drop.</span>
+            <h3 className="text-4xl leading-tight md:text-5xl">
+              Built to solve a <span className="italic">real problem.</span>
             </h3>
           </div>
           <p className="text-lg leading-relaxed text-[#300332]/70">
-            Founded with a vision to simplify beauty, **Glowly** emerged from
-            the belief that effective skincare should be a moment of peace, not
-            a chore. We curate formulations that respect your skin&apos;s natural
-            barrier while delivering transformative results.
+            Founded in 2026, Glowly was built to solve a real problem in
+            Bangladesh&apos;s skincare market: the widespread sale of counterfeit
+            products, leaving customers with no reliable way to know whether what
+            they bought was genuine.
           </p>
           <p className="text-lg leading-relaxed text-[#300332]/70">
-            Every ingredient is ethically sourced, every bottle is a commitment
-            to quality, and every routine is an invitation to rediscover your
-            natural brilliance.
+            A small team of us set out to change that. Glowly sources every
+            product directly from authorized distributors, never from
+            unauthorized resellers, and every item comes with a verifiable batch
+            code you can check against the brand&apos;s official website. Our
+            catalog includes internationally trusted names such as The Ordinary,
+            CosRx, and CeraVe, each one verified before it reaches you.
           </p>
           <div className="pt-4">
-            <button className="border-b-2 border-[#300332] pb-1 text-sm font-bold uppercase tracking-widest hover:text-[#D9C5B2] hover:border-[#D9C5B2] transition-all">
-              Learn about our lab
-            </button>
+            <Link
+              href="/transparency"
+              className="inline-block border-b-2 border-[#300332] pb-1 text-sm font-bold uppercase tracking-widest transition-all hover:border-[#8E1454] hover:text-[#8E1454]"
+            >
+              How we source our products
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Core Values - Oatmeal Section */}
-      <section className="bg-[#D9C5B2]/20 py-24 md:py-32 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-[#300332]/40 mb-4">
+      <section className="bg-[#D9C5B2]/20 px-6 py-24 md:py-32">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-20 text-center">
+            <h2 className="mb-4 text-[10px] font-bold uppercase tracking-[0.4em] text-[#300332]/40">
               The Glowly Standard
             </h2>
-            <h3 className="text-4xl">Why we stand apart</h3>
+            <h3 className="text-4xl">Why customers trust us</h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            {values.map((value, idx) => (
-              <div key={idx} className="group text-center space-y-4">
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm group-hover:bg-[#300332] group-hover:text-white transition-all duration-500 text-[#300332]">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
+            {values.map((value) => (
+              <div key={value.title} className="group space-y-4 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white text-[#300332] shadow-sm transition-all duration-500 group-hover:bg-[#300332] group-hover:text-white">
                   {value.icon}
                 </div>
-                <h4 className="font-bold text-sm uppercase tracking-wider">
+                <h4 className="text-sm font-bold uppercase tracking-wider">
                   {value.title}
                 </h4>
-                <p className="text-sm text-[#300332]/60 leading-relaxed px-4">
+                <p className="px-4 text-sm leading-relaxed text-[#300332]/60">
                   {value.desc}
                 </p>
               </div>
@@ -140,18 +150,27 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Quote Section */}
-      <section className="py-24 md:py-40 px-6 text-center bg-white relative">
-        <div className="max-w-3xl mx-auto space-y-8">
-          <span className="text-6xl text-[#D9C5B2]/40 block">“</span>
-          <h2 className="text-3xl md:text-5xl italic text-[#300332] leading-tight -mt-10">
-            Your skin is a reflection of your self-care ritual. We make sure it
-            glows with intention.
+      {/* Mission Section */}
+      <section className="relative bg-white px-6 py-24 text-center md:py-40">
+        <div className="mx-auto max-w-3xl space-y-8">
+          <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#300332]/40">
+            Our Mission
           </h2>
-          <div className="w-12 h-[1px] bg-[#300332]/20 mx-auto"></div>
-          <p className="text-[10px] uppercase tracking-[0.5em] font-bold opacity-40">
-            Glowly Conscious Beauty
+          <p className="text-3xl italic leading-tight text-[#300332] md:text-5xl">
+            To give people in Bangladesh real access to authentic skincare — and
+            the confidence that what they&apos;re putting on their skin is
+            exactly what it says it is.
           </p>
+          <div className="mx-auto h-[1px] w-12 bg-[#300332]/20"></div>
+          <div className="space-y-6 pt-4">
+            <p className="text-lg leading-relaxed text-[#300332]/70">
+              Explore our full range of authentic skincare, sourced and verified
+              for your peace of mind.
+            </p>
+            <GlowButton href="/shop" className="mx-auto">
+              Shop With Confidence
+            </GlowButton>
+          </div>
         </div>
       </section>
     </div>

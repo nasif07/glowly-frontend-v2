@@ -7,6 +7,7 @@ export const brandSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   logo: z.string().url().optional().or(z.literal("")),
+  logoKey: z.string().nullable().optional(),
   isActive: z.boolean().default(true),
   showOnLanding: z.boolean().default(false),
 });

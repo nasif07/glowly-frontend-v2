@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import Navbar from "@/components/layout/navbar";
 import glowlyColored from "@/public/glowly-colored.png";
 
 /**
@@ -12,8 +13,20 @@ import glowlyColored from "@/public/glowly-colored.png";
  * old two-panel layout: the branding column is gone and the form slides in from
  * the right over a dimmed, blurred backdrop. Clicking the backdrop or the close
  * button returns the user to where they came from.
+ *
+ * Normally this is rendered through the `@modal` slot in the site layout (see
+ * `app/(site)/@modal/(.)login`), so the page the user came from stays mounted
+ * and shows through the scrim. On a hard load of /login or /register — direct
+ * URL, refresh, expired-session redirect — there is no page underneath, so
+ * `standalone` paints the site chrome as a stand-in instead of a flat slab.
  */
-export function AuthDrawer({ children }: { children: ReactNode }) {
+export function AuthDrawer({
+  children,
+  standalone = false,
+}: {
+  children: ReactNode;
+  standalone?: boolean;
+}) {
   const router = useRouter();
 
   const close = () => {
@@ -26,12 +39,26 @@ export function AuthDrawer({ children }: { children: ReactNode }) {
 
   return (
     <div className="font-montserrat fixed inset-0 z-[100]">
+      {/* Stand-in page, hard loads only — the scrim below sits on top of it.
+          `isolate` is load-bearing: the Navbar is `sticky z-50`, and without a
+          stacking context here that z-50 would paint over the scrim instead of
+          being dimmed and blurred by it. */}
+      {standalone && (
+        <div
+          aria-hidden
+          className="bg-background absolute inset-0 isolate overflow-hidden"
+        >
+          <Navbar />
+          <div className="absolute inset-x-0 top-1/4 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_center,#D9C5B2_0%,transparent_65%)] opacity-60" />
+        </div>
+      )}
+
       {/* Backdrop */}
       <button
         type="button"
         aria-label="Close"
         onClick={close}
-        className="animate-in fade-in absolute inset-0 bg-[#300332]/40 backdrop-blur-sm duration-300"
+        className="animate-in fade-in absolute inset-0 bg-[#300332]/45 backdrop-blur-lg duration-300"
       />
 
       {/* Right-side drawer */}

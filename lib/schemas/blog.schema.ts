@@ -12,6 +12,7 @@ export const blogSchema = z.object({
   excerpt: z.string().min(1, "Excerpt is required"),
   content: z.string().min(1, "Content is required"),
   featuredImage: z.string().url().optional().or(z.literal("")),
+  featuredImageKey: z.string().nullable().optional(),
   category: z.string().optional(),
   tags: z.array(z.string()).default([]),
   author: z.string().optional(),

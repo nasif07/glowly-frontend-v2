@@ -539,12 +539,16 @@ export function ProductForm({ id }: { id?: string }) {
             <ImageUploader
               label="Upload Images"
               multiple
+              folder="products"
               value={watchedImages.map((img) => img.url)}
-              onChange={(urls) => {
+              onChange={(urls, keys) => {
+                // Existing entries keep their key and alt text; new ones take
+                // the key the uploader just reported for that url.
                 const next = urls.map(
-                  (url) =>
+                  (url, index) =>
                     watchedImages.find((img) => img.url === url) ?? {
                       url,
+                      key: keys[index] ?? null,
                       altText: watchedTitle || "",
                     },
                 );
