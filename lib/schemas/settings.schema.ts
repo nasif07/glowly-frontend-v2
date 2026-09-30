@@ -11,10 +11,18 @@ export const storeSettingsSchema = z
     advanceAmount: z.coerce
       .number()
       .nonnegative("Advance amount cannot be negative"),
+    deliveryChargeEnabled: z.boolean(),
+    deliveryCharge: z.coerce
+      .number()
+      .nonnegative("Delivery charge cannot be negative"),
   })
   .refine((v) => !v.advanceRequired || v.advanceAmount > 0, {
     message: "Enter an advance amount greater than ৳0",
     path: ["advanceAmount"],
+  })
+  .refine((v) => !v.deliveryChargeEnabled || v.deliveryCharge > 0, {
+    message: "Enter a delivery charge greater than ৳0, or turn it off",
+    path: ["deliveryCharge"],
   });
 
 export type StoreSettingsInput = z.infer<typeof storeSettingsSchema>;

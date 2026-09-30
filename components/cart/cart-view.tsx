@@ -6,11 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag } from "lucide-react";
 import Button from "@/components/common/button";
-import {
-  useCartStore,
-  useCartSubtotal,
-  CART_SHIPPING_CHARGE,
-} from "@/hooks/use-cart";
+import { ShadeTag } from "@/components/common/shade-swatch";
+import { BundleContents } from "@/components/cart/bundle-contents";
+import { useCartStore, useCartSubtotal } from "@/hooks/use-cart";
+import { useDeliveryCharge } from "@/hooks/use-settings";
 
 export default function CartView() {
   const router = useRouter();
@@ -18,13 +17,13 @@ export default function CartView() {
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
   const subtotal = useCartSubtotal();
+  const shipping = useDeliveryCharge();
 
   // Gate on mount so the localStorage-backed store has hydrated (avoids a
   // hydration mismatch — the server renders an empty cart).
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const shipping = CART_SHIPPING_CHARGE;
   const total = subtotal + shipping;
   const cartItems = mounted ? items : [];
 
@@ -61,13 +60,29 @@ export default function CartView() {
                     <h3 className="font-bold text-[#2D1B14] text-sm sm:text-base truncate">
                       {item.title}
                     </h3>
-                    {item.variant && (
-                      <p className="text-[10px] sm:text-xs text-[#8D6E63] font-medium uppercase tracking-wider mb-1">
-                        {item.variant.weight ||
-                          item.variant.size ||
-                          item.variant.color}
-                      </p>
+                    {item.isShade && item.variant ? (
+                      <ShadeTag
+                        name={item.variant.color}
+                        hex={item.variant.hex}
+                        className="mb-1 text-[10px] sm:text-xs text-[#8D6E63] font-medium uppercase tracking-wider"
+                      />
+                    ) : (
+                      // The unnamed variant a single-option product quick-adds
+                      // has nothing to show.
+                      (item.variant?.weight ||
+                        item.variant?.size ||
+                        item.variant?.color) && (
+                        <p className="text-[10px] sm:text-xs text-[#8D6E63] font-medium uppercase tracking-wider mb-1">
+                          {item.variant.weight ||
+                            item.variant.size ||
+                            item.variant.color}
+                        </p>
+                      )
                     )}
+                    <BundleContents
+                      contents={item.bundleContents}
+                      className="mb-1 line-clamp-2"
+                    />
                     <p className="text-[#A1887F] font-bold text-sm sm:text-base font-montserrat">
                       ৳{item.price}
                     </p>
@@ -150,7 +165,7 @@ export default function CartView() {
                   <div className="flex justify-between text-sm text-[#8D6E63]">
                     <span>Shipping</span>
                     <span className="text-green-600 font-medium font-montserrat">
-                      ৳{shipping.toFixed(0)}
+                      {shipping === 0 ? "Free" : `৳${shipping.toFixed(0)}`}
                     </span>
                   </div>
                   <div className="flex justify-between pt-3 border-t font-bold text-lg text-[#2D1B14]">

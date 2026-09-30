@@ -7,5 +7,8 @@ export * from "./hero";
 export * from "./order";
 export * from "./product";
 export * from "./settings";
+export * from "./skin-type";
 export * from "./steadfast";
 export * from "./user";
+export * from "./consultation";
+export * from "./notification";

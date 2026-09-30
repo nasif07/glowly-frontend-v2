@@ -9,6 +9,9 @@ import { useProducts } from "@/hooks/use-products";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { trackSearch } from "@/lib/pixel";
 import type { Product } from "@/types";
+import { getUnitPrice, getListPrice } from "@/lib/pricing";
+import { isSoldOutByStock } from "@/lib/stock";
+import { useStockEnforcement } from "@/hooks/use-settings";
 
 /** Below this the popup stays shut — one letter matches half the catalogue. */
 const MIN_QUERY = 2;
@@ -27,6 +30,8 @@ interface NavSearchProps {
  */
 export function NavSearch({ isMobileOpen, onNavigate }: NavSearchProps) {
   const router = useRouter();
+  // Sold out follows real stock when the API enforces it, else the label.
+  const stockEnforced = useStockEnforcement();
 
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -111,7 +116,7 @@ export function NavSearch({ isMobileOpen, onNavigate }: NavSearchProps) {
   return (
     <div
       ref={containerRef}
-      className={`${isMobileOpen ? "flex w-full" : "hidden md:flex"} relative md:w-64 lg:w-72`}
+      className={`${isMobileOpen ? "flex w-full" : "hidden md:flex"} relative md:w-64 lg:w-48 xl:w-64`}
     >
       <form onSubmit={handleSubmit} className="group relative w-full">
         <input
@@ -172,10 +177,8 @@ export function NavSearch({ isMobileOpen, onNavigate }: NavSearchProps) {
           ) : (
             <ul className="py-2">
               {results.map((product, index) => {
-                const price = product.discountPrice || product.price;
-                const hasDiscount =
-                  product.discountPrice > 0 &&
-                  product.discountPrice < product.price;
+                const price = getUnitPrice(product);
+                const listPrice = getListPrice(product, price);
 
                 return (
                   <li key={product._id} role="option" aria-selected={index === activeIndex}>
@@ -205,17 +208,19 @@ export function NavSearch({ isMobileOpen, onNavigate }: NavSearchProps) {
                         </p>
                         <p className="font-montserrat mt-0.5 flex items-center gap-2 text-xs">
                           <span className="font-bold text-[#8E1454]">
-                            ৳{price?.toLocaleString()}
+                            ৳{price.toLocaleString()}
                           </span>
-                          {hasDiscount && (
+                          {listPrice ? (
                             <span className="text-[#8A6F63] line-through">
-                              ৳{product.price.toLocaleString()}
+                              ৳{listPrice.toLocaleString()}
                             </span>
-                          )}
+                          ) : null}
                         </p>
                       </div>
 
-                      {product.stockStatus === "Out of Stock" && (
+                      {(stockEnforced
+                        ? isSoldOutByStock(product)
+                        : product.stockStatus === "Out of Stock") && (
                         <span className="shrink-0 rounded-full bg-[#F3E9DC] px-2 py-0.5 text-[9px] font-bold tracking-wider text-[#8A6F63] uppercase">
                           Sold out
                         </span>

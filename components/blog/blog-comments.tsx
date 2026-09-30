@@ -1,16 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { MessageCircle } from "lucide-react";
-import { avatar } from "@/lib/blog";
+import { AuthorAvatar } from "@/components/blog/author-chip";
 import { t, pick, localizeDigits, type Localized } from "@/lib/i18n";
 import { useLang } from "@/hooks/use-language";
 
 interface Comment {
   id: number;
   name: string;
-  avatar: string;
   /** Bilingual relative date, or a plain string for freshly-posted comments. */
   date: Localized | string;
   text: Localized | string;
@@ -20,7 +18,6 @@ const seed: Comment[] = [
   {
     id: 1,
     name: "Mariam K.",
-    avatar: avatar(5),
     date: { en: "3 days ago", bn: "৩ দিন আগে" },
     text: {
       en: "This finally made the whole routine click for me. I was definitely over-exfoliating — cutting back to twice a week made a huge difference.",
@@ -30,7 +27,6 @@ const seed: Comment[] = [
   {
     id: 2,
     name: "Tanvir H.",
-    avatar: avatar(15),
     date: { en: "1 week ago", bn: "১ সপ্তাহ আগে" },
     text: {
       en: "Loved the note about applying hyaluronic acid on damp skin. Total game changer, thank you Glowly team!",
@@ -55,7 +51,6 @@ export default function BlogComments() {
       {
         id: Date.now(),
         name: name.trim(),
-        avatar: avatar(((Date.now() % 60) + 1) as number),
         date: t("justNow", lang),
         text: text.trim(),
       },
@@ -104,13 +99,7 @@ export default function BlogComments() {
       <div className="space-y-6">
         {comments.map((c) => (
           <div key={c.id} className="flex gap-4">
-            <Image
-              src={c.avatar}
-              alt={c.name}
-              width={44}
-              height={44}
-              className="h-11 w-11 shrink-0 rounded-full object-cover"
-            />
+            <AuthorAvatar name={c.name} size={44} />
             <div className="flex-1 rounded-2xl bg-white p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
               <div className="mb-1 flex items-center gap-2">
                 <p className="text-sm font-bold text-[#2D1B14] font-montserrat">

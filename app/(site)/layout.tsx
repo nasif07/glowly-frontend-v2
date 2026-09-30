@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import { ContactFab } from "@/components/layout/contact-fab";
 
 // Public storefront chrome — home, shop, cart, checkout, profile, etc.
 // Scoped to this route group so /dashboard and /(auth)/* pages (which build
@@ -21,6 +22,7 @@ export default function SiteLayout({
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
+      <ContactFab />
       {modal}
     </>
   );

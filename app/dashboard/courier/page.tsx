@@ -41,7 +41,7 @@ export default function CourierDashboardPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <BalanceCard />
 
-        <div className="flex flex-wrap gap-2 rounded-2xl border border-[#E8D8C3] bg-white p-2 shadow-sm">
+        <div className="flex flex-wrap gap-2 rounded-2xl border border-[#EFDFE7] bg-white p-2 shadow-sm">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -50,7 +50,7 @@ export default function CourierDashboardPage() {
               className={`rounded-xl px-4 py-2 text-xs font-bold tracking-wide uppercase transition-all ${
                 tab === t.key
                   ? "bg-[#300332] text-white"
-                  : "text-[#4B2E2B] hover:bg-[#F9F1E7]"
+                  : "text-[#300332] hover:bg-[#FBF4F7]"
               }`}
             >
               {t.label}

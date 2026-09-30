@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ShoppingBag,
   ShieldCheck,
@@ -13,8 +13,11 @@ import {
   Info,
   Plus,
   Minus,
+  Gift,
+  Target,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -28,12 +31,36 @@ import { useCartStore } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
 import { trackAddToCart, trackViewContent } from "@/lib/track-event";
 import type { Category, ProductVariant } from "@/types";
+import { getUnitPrice, getListPrice } from "@/lib/pricing";
+import { isShadeProduct } from "@/lib/shades";
+import {
+  isPreOrder,
+  isSoldOutByStock,
+  isVariantSoldOutByStock,
+} from "@/lib/stock";
+import { useStockEnforcement } from "@/hooks/use-settings";
+import { isRichTextEmpty } from "@/lib/rich-text";
+import { RichText } from "@/components/common/rich-text";
+import {
+  bundleItems,
+  bundleWorth,
+  isBundleProduct,
+  variantName,
+} from "@/lib/bundle";
+import { skinConcernLabel, skinTypeLabel } from "@/lib/skin";
 
 import "swiper/css";
 import "swiper/css/thumbs";
 import "swiper/css/free-mode";
 
-export default function ProductDetail({ slug }: { slug: string }) {
+export default function ProductDetail({
+  slug,
+  initialShadeId,
+}: {
+  slug: string;
+  /** From `?shade=<variantId>` — the only way a shade is preselected. */
+  initialShadeId?: string;
+}) {
   const router = useRouter();
   const addItem = useCartStore((s) => s.addItem);
   const { user } = useAuth();
@@ -43,15 +70,59 @@ export default function ProductDetail({ slug }: { slug: string }) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     null,
   );
+  const [mainSwiper, setMainSwiper] = useState<SwiperClass | null>(null);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  // Pick the first in-stock variant once the product loads.
+  const isShade = isShadeProduct(product);
+  const isCombo = isBundleProduct(product);
+  const stockEnforced = useStockEnforcement();
+
+  // With stock enforced a variant is sold out by its real stock, and never on
+  // a pre-order product; otherwise the rule the page always used.
+  const variantSoldOut = (v: ProductVariant) =>
+    stockEnforced && product
+      ? isVariantSoldOutByStock(product, v)
+      : v.stock <= 0;
+
+  // The gallery plus every shade's own image, so picking a shade can slide to
+  // its shot without swapping slides under Swiper.
+  const gallery = useMemo(() => {
+    if (!product) return [];
+    const images = [...(product.images ?? [])];
+    // A combo without photos of its own shows its products'.
+    if (!images.length && isBundleProduct(product)) {
+      for (const { product: item } of bundleItems(product)) {
+        const first = item.images?.[0];
+        if (first?.url) images.push({ url: first.url, altText: item.title });
+      }
+    }
+    if (isShadeProduct(product)) {
+      for (const v of product.variants ?? []) {
+        const url = v.image?.url;
+        if (url && !images.some((img) => img.url === url)) {
+          images.push({ url, altText: `${product.title} – ${v.color}` });
+        }
+      }
+    }
+    return images;
+  }, [product]);
+
+  // Once the product loads: a standard product preselects its first in-stock
+  // variant. A shade product preselects nothing — the customer picks — unless
+  // the link named an in-stock shade.
   useEffect(() => {
     if (product) {
-      const firstInStock = product.variants?.find((v) => v.stock > 0);
-      setSelectedVariant(firstInStock || product.variants?.[0] || null);
+      if (isShadeProduct(product)) {
+        const requested = product.variants?.find(
+          (v) => v._id === initialShadeId && !variantSoldOut(v),
+        );
+        setSelectedVariant(requested ?? null);
+      } else {
+        const firstInStock = product.variants?.find((v) => !variantSoldOut(v));
+        setSelectedVariant(firstInStock || product.variants?.[0] || null);
+      }
       window.scrollTo(0, 0);
       trackViewContent(product, user);
     }
@@ -63,6 +134,16 @@ export default function ProductDetail({ slug }: { slug: string }) {
   useEffect(() => {
     setQuantity(1);
   }, [slug, selectedVariant]);
+
+  // Show the picked shade's own image. Autoplay stops so it stays in view.
+  useEffect(() => {
+    const url = selectedVariant?.image?.url;
+    if (!isShade || !url || !mainSwiper || mainSwiper.destroyed) return;
+    const index = gallery.findIndex((img) => img.url === url);
+    if (index === -1) return;
+    mainSwiper.autoplay?.stop();
+    mainSwiper.slideTo(index);
+  }, [isShade, selectedVariant, mainSwiper, gallery]);
 
   const categoryId =
     product && typeof product.category === "object"
@@ -85,21 +166,74 @@ export default function ProductDetail({ slug }: { slug: string }) {
       </div>
     );
 
-  const isOutOfStock = selectedVariant
-    ? selectedVariant.stock <= 0
-    : product.stockStatus === "Out of Stock";
+  const inStockShades = isShade
+    ? (product.variants ?? []).filter((v) => !variantSoldOut(v))
+    : [];
+  // A shade product is sold out only when every shade is. A product without
+  // variants goes by its label — or, with stock enforced, by its real stock.
+  const isOutOfStock = isShade
+    ? selectedVariant
+      ? variantSoldOut(selectedVariant)
+      : inStockShades.length === 0
+    : selectedVariant
+      ? variantSoldOut(selectedVariant)
+      : stockEnforced
+        ? isSoldOutByStock(product)
+        : // A combo's stock is what its products make up (the API works it
+          // out), so it goes by that even when stock isn't enforced.
+          product.stockStatus === "Out of Stock" ||
+          (isCombo && !isPreOrder(product) && !(Number(product.totalStock) > 0));
+  const needsShade = isShade && !selectedVariant && !isOutOfStock;
+  const cannotBuy = isOutOfStock || needsShade;
 
-  // What the cart will actually charge for the current selection — a variant
-  // priced apart from the product must be what the page quotes.
-  const unitPrice =
-    selectedVariant?.price || product.discountPrice || product.price || 0;
-  // Strike the list price only when it really is above what's being charged.
-  const showListPrice =
-    !!product.price && !!product.discountPrice && product.price > unitPrice;
+  const selectShade = (shade: ProductVariant) => {
+    if (variantSoldOut(shade)) return;
+    setSelectedVariant(shade);
+    // Keep the URL shareable without a server round trip.
+    if (shade._id) {
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}?shade=${shade._id}`,
+      );
+    }
+  };
+
+  // What the cart will actually charge for the current selection.
+  const unitPrice = getUnitPrice(product, selectedVariant);
+  // Strike the list price only when it really is above what is being charged.
+  const listPrice = getListPrice(product, unitPrice);
+  // Rich text: an "empty" body is often "<p></p>", which is truthy but shows
+  // nothing — so the toggle has to test the text, not the string.
+  const hasFullDescription = !isRichTextEmpty(product.fullDescription);
+
+  const comboItems = isCombo ? bundleItems(product) : [];
+  const comboWorth = isCombo ? bundleWorth(product) : null;
+  const comboSaving =
+    comboWorth !== null && comboWorth > unitPrice ? comboWorth - unitPrice : 0;
+
+  // Tagged skin types; products tagged the old way show their free text.
+  const skinTypes = product.skinTypes ?? [];
+  const skinConcerns = product.skinConcerns ?? [];
+  const legacyIdealFor = skinTypes.length ? [] : (product.whoShouldUse ?? []);
+  const hasIdealFor =
+    skinTypes.length > 0 ||
+    skinConcerns.length > 0 ||
+    legacyIdealFor.length > 0 ||
+    !isRichTextEmpty(product.howToUse);
+  const hasBenefits = (product.keyBenefits?.length ?? 0) > 0;
+  const hasIngredients =
+    (product.keyIngredients?.length ?? 0) > 0 || !!product.fullIngredientList;
 
   const handleQuantityChange = (type: "plus" | "minus") => {
     if (type === "plus") {
-      const maxStock = selectedVariant?.stock || 99;
+      // Enforced stock caps the quantity (a pre-order doesn't); unenforced,
+      // the cap the page always had.
+      const maxStock = !stockEnforced
+        ? selectedVariant?.stock || 99
+        : isPreOrder(product)
+          ? 99
+          : (selectedVariant ? selectedVariant.stock : product.totalStock) || 0;
       if (quantity < maxStock) {
         setQuantity((prev) => prev + 1);
       } else {
@@ -111,7 +245,7 @@ export default function ProductDetail({ slug }: { slug: string }) {
   };
 
   const handleAddToCart = (showToast = true) => {
-    if (isOutOfStock) return;
+    if (cannotBuy) return;
     addItem(product, selectedVariant, quantity);
     trackAddToCart(product, quantity, user);
     if (showToast) toast.success(`${quantity} item(s) added to cart!`);
@@ -131,9 +265,10 @@ export default function ProductDetail({ slug }: { slug: string }) {
                   thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
               }}
               modules={[FreeMode, Thumbs, Autoplay]}
+              onSwiper={setMainSwiper}
               className="rounded-[2.5rem] bg-white aspect-square shadow-sm border border-[#E8D8C3]/30 overflow-hidden"
             >
-              {product.images?.map((img, i) => (
+              {gallery.map((img, i) => (
                 <SwiperSlide key={i}>
                   <div className="relative w-full aspect-square">
                     <Image
@@ -157,7 +292,7 @@ export default function ProductDetail({ slug }: { slug: string }) {
               modules={[FreeMode, Thumbs]}
               className="thumbs-swiper px-2"
             >
-              {product.images?.map((img, i) => (
+              {gallery.map((img, i) => (
                 <SwiperSlide key={i} className="cursor-pointer">
                   {({ isActive }) => (
                     <div
@@ -198,13 +333,80 @@ export default function ProductDetail({ slug }: { slug: string }) {
                   {unitPrice.toLocaleString()}
                 </span>
 
-                {showListPrice ? (
+                {listPrice ? (
                   <span className="text-[#300332]/30 text-[20px] line-through font-medium ml-2">
-                    ৳{product.price.toLocaleString()}
+                    ৳{listPrice.toLocaleString()}
                   </span>
                 ) : null}
               </div>
             </div>
+
+            {/* COMBO CONTENTS */}
+            {isCombo && comboItems.length > 0 && (
+              <div className="mb-6 rounded-3xl border border-[#E8D8C3] bg-[#FDF8F3] p-4 md:p-5">
+                <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                  <h3 className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-widest text-[#A67B5B]">
+                    <Gift size={14} /> What&apos;s in this combo
+                  </h3>
+                  {comboSaving > 0 && (
+                    <span className="rounded-full bg-[#300332] px-3 py-1 font-montserrat text-[11px] font-semibold text-white">
+                      Save ৳{comboSaving.toLocaleString()} vs. buying separately
+                    </span>
+                  )}
+                </div>
+                <ul className="divide-y divide-[#E8D8C3]/60">
+                  {comboItems.map(({ product: item, variant, quantity: qty }) => (
+                    <li key={`${item._id}-${variant?._id ?? ""}`}>
+                      <Link
+                        href={`/products/${item.slug || item._id}${
+                          variant?._id && item.variantType === "shade"
+                            ? `?shade=${variant._id}`
+                            : ""
+                        }`}
+                        className="group flex items-center gap-3 py-3"
+                      >
+                        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-white">
+                          {(variant?.image?.url || item.images?.[0]?.url) && (
+                            <Image
+                              src={variant?.image?.url || item.images[0].url}
+                              alt={item.title}
+                              fill
+                              sizes="56px"
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="line-clamp-2 text-sm font-semibold text-[#2D1B14] group-hover:text-[#A67B5B]">
+                            {item.title}
+                          </p>
+                          {variant && variantName(variant) && (
+                            <p className="flex items-center gap-1.5 text-xs text-[#8D6E63]">
+                              {variant.hex && (
+                                <span
+                                  aria-hidden
+                                  className="h-3 w-3 rounded-full border border-white ring-1 ring-[#E8D8C3]"
+                                  style={{ backgroundColor: variant.hex }}
+                                />
+                              )}
+                              {variantName(variant)}
+                            </p>
+                          )}
+                        </div>
+                        <span className="shrink-0 font-montserrat text-sm font-bold text-[#300332]">
+                          ×{qty}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                {comboWorth !== null && comboSaving > 0 && (
+                  <p className="mt-2 font-montserrat text-xs text-[#8D6E63]">
+                    Worth ৳{comboWorth.toLocaleString()} bought one by one.
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* QUICK INFO GRID */}
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -244,7 +446,7 @@ export default function ProductDetail({ slug }: { slug: string }) {
               >
                 {product.shortDescription}
               </p>
-              {product.fullDescription && (
+              {hasFullDescription && (
                 <button
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   className="mt-3 text-[#2D1B14] text-xs font-extrabold flex items-center gap-1 hover:text-[#A67B5B] transition-colors"
@@ -260,15 +462,76 @@ export default function ProductDetail({ slug }: { slug: string }) {
                   )}
                 </button>
               )}
-              {showFullDescription && product.fullDescription && (
-                <p className="mt-4 text-[#5D4037] leading-relaxed animate-in fade-in slide-in-from-top-2">
-                  {product.fullDescription}
-                </p>
+              {showFullDescription && hasFullDescription && (
+                <RichText
+                  html={product.fullDescription}
+                  className="mt-4 animate-in fade-in slide-in-from-top-2"
+                />
               )}
             </div>
 
+            {/* SHADES */}
+            {isShade && product.variants?.length > 0 && (
+              <div className="mb-4">
+                <div className="mb-3 flex items-baseline gap-3">
+                  <h3 className="shrink-0 text-[13px] font-bold uppercase tracking-widest text-[#A67B5B]">
+                    Shade
+                  </h3>
+                  <span className="min-w-0 truncate text-sm font-semibold text-[#2D1B14]">
+                    {selectedVariant?.color ?? "Select a shade"}
+                  </span>
+                </div>
+                <div
+                  role="radiogroup"
+                  aria-label="Shade"
+                  className="flex flex-wrap gap-3"
+                >
+                  {product.variants.map((v) => {
+                    const soldOut = variantSoldOut(v);
+                    const selected = selectedVariant?._id === v._id;
+                    return (
+                      <button
+                        key={v._id}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        aria-label={soldOut ? `${v.color} (out of stock)` : v.color}
+                        title={soldOut ? `${v.color} — out of stock` : v.color}
+                        disabled={soldOut}
+                        onClick={() => selectShade(v)}
+                        style={{ backgroundColor: v.hex }}
+                        className={`relative h-10 w-10 overflow-hidden rounded-full border-2 border-white transition-all ${
+                          selected
+                            ? "scale-110 ring-2 ring-[#300332] ring-offset-2"
+                            : "ring-1 ring-[#E8D8C3]"
+                        } ${
+                          soldOut
+                            ? "cursor-not-allowed opacity-40"
+                            : "cursor-pointer hover:scale-105"
+                        }`}
+                      >
+                        {/* Struck through: shown so the range is visible,
+                            but it can't be picked. */}
+                        {soldOut && (
+                          <span
+                            aria-hidden
+                            className="absolute top-1/2 left-1/2 h-0.5 w-[140%] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-[#2D1B14]"
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                {needsShade && (
+                  <p className="mt-3 text-xs font-semibold text-[#8D6E63]">
+                    Pick a shade to add this to your bag.
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* VARIANTS */}
-            {product.variants?.length > 0 && (
+            {!isShade && product.variants?.length > 0 && (
               <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
                 <h3 className="shrink-0 text-[13px] font-bold uppercase tracking-widest text-[#A67B5B]">
                   Available Options
@@ -278,25 +541,33 @@ export default function ProductDetail({ slug }: { slug: string }) {
                     <Button
                       key={v._id}
                       onClick={() => setSelectedVariant(v)}
+                      // Unenforced, a sold-out option stays pickable, as it
+                      // always was; enforced, it's marked and can't be.
+                      disabled={stockEnforced && variantSoldOut(v)}
                       variant={
                         selectedVariant?._id === v._id
                           ? "primary"
-                          : v.stock <= 0
+                          : variantSoldOut(v)
                             ? "secondary"
                             : "outline"
                       }
                       className={`max-w-full whitespace-normal text-center leading-snug px-4! py-2! tracking-widest! font-montserrat ${selectedVariant?._id === v._id ? "shadow-lg shadow-[#2D1B14]/20" : ""}`}
                     >
                       {[v.color, v.size, v.weight].filter(Boolean).join(" · ")}
+                      {stockEnforced && variantSoldOut(v) && (
+                        <span className="ml-1.5 text-[10px] opacity-70">
+                          · Sold out
+                        </span>
+                      )}
                     </Button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* QUANTITY SELECTOR */}
+            {/* QUANTITY SELECTOR — below lg the sticky footer carries one. */}
             {!isOutOfStock && (
-              <div className="mb-4 hidden md:flex items-center gap-3">
+              <div className="mb-4 hidden lg:flex items-center gap-3">
                 <div className="flex items-center w-fit bg-white border-2 border-[#E8D8C3]/40 rounded-2xl p-1">
                   <button
                     onClick={() => handleQuantityChange("minus")}
@@ -320,23 +591,27 @@ export default function ProductDetail({ slug }: { slug: string }) {
             {/* DESKTOP ACTIONS */}
             <div className="hidden lg:flex gap-4">
               <Button
-                disabled={isOutOfStock}
+                disabled={cannotBuy}
                 onClick={() => {
                   handleAddToCart();
                 }}
-                variant={isOutOfStock ? "secondary" : "outline"}
+                variant={cannotBuy ? "secondary" : "outline"}
                 className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-3 border-2 font-bold"
               >
                 <ShoppingBag size={20} />{" "}
-                {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                {isOutOfStock
+                  ? "Out of Stock"
+                  : needsShade
+                    ? "Select a Shade"
+                    : "Add to Cart"}
               </Button>
               <Button
-                disabled={isOutOfStock}
+                disabled={cannotBuy}
                 onClick={() => {
                   handleAddToCart(false);
                   router.push("/cart");
                 }}
-                variant={isOutOfStock ? "secondary" : "primary"}
+                variant={cannotBuy ? "secondary" : "primary"}
                 className="flex-1 h-14 rounded-2xl font-bold shadow-xl shadow-[#2D1B14]/10"
               >
                 {isOutOfStock ? "Unavailable" : "Instant Checkout"}
@@ -345,8 +620,10 @@ export default function ProductDetail({ slug }: { slug: string }) {
           </div>
         </div>
 
-        {/* RICH CONTENT SECTION */}
+        {/* RICH CONTENT SECTION — a column with nothing in it is left out. */}
+        {(hasBenefits || hasIngredients || hasIdealFor) && (
         <div className="md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-[#E8D8C3]/50 pt-8 md:pt-16">
+          {hasBenefits && (
           <div className="space-y-4">
             <h4 className="flex items-center gap-2 font-bold text-[#2D1B14] uppercase text-lg md:text-xl tracking-widest">
               <Sparkles className="text-[#A67B5B]" size={18} /> Key Benefits
@@ -363,7 +640,9 @@ export default function ProductDetail({ slug }: { slug: string }) {
               ))}
             </ul>
           </div>
+          )}
 
+          {hasIngredients && (
           <div className="space-y-4">
             <h4 className="flex items-center gap-2 font-bold text-[#2D1B14] uppercase text-lg md:text-xl tracking-widest">
               <FlaskConical className="text-[#A67B5B]" size={18} /> Ingredients
@@ -384,33 +663,67 @@ export default function ProductDetail({ slug }: { slug: string }) {
               </p>
             )}
           </div>
+          )}
 
+          {hasIdealFor && (
           <div className="space-y-4">
-            <h4 className="flex items-center gap-2 font-bold text-[#2D1B14] uppercase text-lg md:text-xl tracking-widest">
-              <UserCheck className="text-[#A67B5B]" size={18} /> Ideal For
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {product.whoShouldUse?.map((who, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-1 border border-[#A67B5B]/30 text-[#A67B5B] text-[15px] font-semibold font-bold rounded-lg"
-                >
-                  {who}
-                </span>
-              ))}
-            </div>
-            {product.howToUse && (
+            {(skinTypes.length > 0 || legacyIdealFor.length > 0) && (
+              <>
+                <h4 className="flex items-center gap-2 font-bold text-[#2D1B14] uppercase text-lg md:text-xl tracking-widest">
+                  <UserCheck className="text-[#A67B5B]" size={18} /> Ideal For
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {/* Each skin type opens the shop filtered to it. */}
+                  {skinTypes.map((type) => (
+                    <Link
+                      key={type}
+                      href={type === "all" ? "/shop" : `/shop?skinType=${type}`}
+                      className="px-3 py-1 border border-[#A67B5B]/30 text-[#A67B5B] text-[15px] font-bold rounded-lg transition-colors hover:bg-[#A67B5B] hover:text-white"
+                    >
+                      {skinTypeLabel(type)}
+                    </Link>
+                  ))}
+                  {legacyIdealFor.map((who, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 border border-[#A67B5B]/30 text-[#A67B5B] text-[15px] font-bold rounded-lg"
+                    >
+                      {who}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
+            {skinConcerns.length > 0 && (
+              <>
+                <h4 className="flex items-center gap-2 pt-2 font-bold text-[#2D1B14] uppercase text-lg md:text-xl tracking-widest">
+                  <Target className="text-[#A67B5B]" size={18} /> Targets
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {skinConcerns.map((concern) => (
+                    <Link
+                      key={concern}
+                      href={`/shop?skinConcern=${concern}`}
+                      className="px-3 py-1 bg-[#F3E9DC] text-[#8C6A5E] text-[13px] font-bold rounded-xl uppercase transition-colors hover:bg-[#A67B5B] hover:text-white"
+                    >
+                      {skinConcernLabel(concern)}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+            {!isRichTextEmpty(product.howToUse) && (
               <div className="mt-6 p-4 bg-[#FDF8F3] rounded-2xl border border-[#F3E9DC]">
                 <p className="text-[12px] font-black uppercase text-[#8C6A5E] mb-2">
                   How to use:
                 </p>
-                <p className="text-md text-[#5D4037] italic leading-relaxed">
-                  {product.howToUse}
-                </p>
+                <RichText html={product.howToUse} className="text-md" />
               </div>
             )}
           </div>
+          )}
         </div>
+        )}
 
         {/* RECOMMENDATIONS */}
         {suggestedProducts.length > 0 && (
@@ -448,13 +761,15 @@ export default function ProductDetail({ slug }: { slug: string }) {
         )}
 
         <Button
-          disabled={isOutOfStock}
+          disabled={cannotBuy}
           onClick={() => handleAddToCart()}
-          variant={isOutOfStock ? "secondary" : "outline"}
+          variant={cannotBuy ? "secondary" : "outline"}
           className="flex-1 h-12 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border-2"
         >
           {isOutOfStock ? (
             "SOLD OUT"
+          ) : needsShade ? (
+            "SELECT SHADE"
           ) : (
             <>
               <ShoppingBag size={16} /> CART
@@ -462,13 +777,13 @@ export default function ProductDetail({ slug }: { slug: string }) {
           )}
         </Button>
         <Button
-          disabled={isOutOfStock}
+          disabled={cannotBuy}
           fullWidth
           onClick={() => {
             handleAddToCart(false);
             router.push("/cart");
           }}
-          variant={isOutOfStock ? "secondary" : "primary"}
+          variant={cannotBuy ? "secondary" : "primary"}
           className="flex-1 h-12 rounded-xl font-bold text-xs"
         >
           {isOutOfStock ? "UNAVAILABLE" : "BUY NOW"}

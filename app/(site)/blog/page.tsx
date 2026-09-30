@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAllPosts, getFeaturedPost, getPopularPosts } from "@/lib/blog-data";
+import { getPublishedPosts } from "@/lib/blog-api";
 import BlogListing from "@/components/blog/blog-listing";
 
 export const metadata: Metadata = {
@@ -13,12 +13,16 @@ export const metadata: Metadata = {
     "Expert skincare advice, ingredient science and product guides from the Glowly team. Learn how to build a routine that actually works.",
 };
 
-export default function BlogPage() {
-  // Raw (bilingual) data is passed through; BlogListing resolves it to the
-  // reader's chosen language on the client so the toggle switches instantly.
-  const posts = getAllPosts();
-  const featured = getFeaturedPost();
-  const popular = getPopularPosts(4);
+// Posts are written in the dashboard and expected to appear without a rebuild,
+// so the list is re-fetched rather than baked in at build time.
+export const revalidate = 300;
+
+export default async function BlogPage() {
+  const posts = await getPublishedPosts();
+
+  // The hero headlines whichever post is flagged featured, else the newest.
+  const featured = posts.find((p) => p.isFeatured) ?? posts[0] ?? null;
+  const popular = [...posts].sort((a, b) => b.views - a.views).slice(0, 4);
 
   return <BlogListing posts={posts} featured={featured} popular={popular} />;
 }

@@ -13,9 +13,19 @@ import { useCategories } from "@/hooks/use-categories";
 import { useBrands } from "@/hooks/use-brands";
 import { useInfiniteProducts } from "@/hooks/use-products";
 import { useMobileFilter } from "@/hooks/use-ui-store";
+import {
+  SKIN_CONCERNS,
+  SKIN_TYPES,
+  skinConcernLabel,
+  skinTypeLabel,
+} from "@/lib/skin";
 import type { Category, ProductsQuery } from "@/types";
 
 const LIMIT = 9;
+
+/** `?skinType=oily,dry` → ["oily", "dry"]. */
+const listParam = (value: string | null) =>
+  (value ?? "").split(",").filter(Boolean);
 
 export default function ProductListing() {
   const router = useRouter();
@@ -43,6 +53,9 @@ export default function ProductListing() {
   const activeCategory = searchParams.get("category") || "All";
   const activeSort = searchParams.get("sort") || "newest";
   const activeBrand = searchParams.get("brand") || "All";
+  const activeSkinTypes = listParam(searchParams.get("skinType"));
+  const activeConcerns = listParam(searchParams.get("skinConcern"));
+  const combosOnly = searchParams.get("type") === "bundle";
 
   const { data: categories = [] } = useCategories();
   const { data: brands = [] } = useBrands();
@@ -65,6 +78,11 @@ export default function ProductListing() {
     if (searchParams.get("search")) f.search = searchParams.get("search")!;
     if (activeCategory !== "All") f.category = activeCategory;
     if (activeBrand !== "All") f.brand = activeBrand;
+    if (searchParams.get("skinType")) f.skinType = searchParams.get("skinType")!;
+    if (searchParams.get("skinConcern")) {
+      f.skinConcern = searchParams.get("skinConcern")!;
+    }
+    if (searchParams.get("type") === "bundle") f.type = "bundle";
     return f;
   }, [searchParams, activeCategory, activeBrand, activeSort]);
 
@@ -80,6 +98,8 @@ export default function ProductListing() {
     () => data?.pages.flatMap((p) => p.data) ?? [],
     [data],
   );
+  // The whole match, not just the pages scrolled in so far.
+  const totalProducts = data?.pages[0]?.meta?.total ?? products.length;
 
   /* ---------------- SYNC UI WITH URL ---------------- */
   useEffect(() => {
@@ -137,6 +157,27 @@ export default function ProductListing() {
     router.push(pathname);
     setIsMobileFilterOpen(false);
     setExpandedCats({});
+  };
+
+  /** Add or remove one value of a comma-list filter (?skinType=oily,dry). */
+  const toggleListParam = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const current = listParam(params.get(key));
+    const next = current.includes(value)
+      ? current.filter((v) => v !== value)
+      : [...current, value];
+    if (next.length) params.set(key, next.join(","));
+    else params.delete(key);
+    params.set("page", "1");
+    commitParams(params);
+  };
+
+  const setCombosOnly = (on: boolean) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (on) params.set("type", "bundle");
+    else params.delete("type");
+    params.set("page", "1");
+    commitParams(params);
   };
 
   // Child-category bar: set (or clear) the ?category filter, same as the sidebar.
@@ -235,6 +276,76 @@ export default function ProductListing() {
         </button>
         {categories.map((cat) => renderCategory(cat))}
       </div>
+
+      <div className="bg-stone-100 p-4 rounded-2xl border border-stone-200">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-[#A1887F]">
+          Skin Type
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {SKIN_TYPES.filter((t) => t.value !== "all").map((t) => {
+            const selected = activeSkinTypes.includes(t.value);
+            return (
+              <button
+                key={t.value}
+                aria-pressed={selected}
+                onClick={() => toggleListParam("skinType", t.value)}
+                className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase border ${
+                  selected
+                    ? "bg-linear-to-r from-[#360718] via-[#8E1454] to-[#360718] text-white border-transparent"
+                    : "bg-white text-stone-500 border-stone-200"
+                }`}
+              >
+                {t.short}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-[10px] text-stone-400">
+          Includes products made for all skin types.
+        </p>
+      </div>
+
+      <div className="bg-stone-100 p-4 rounded-2xl border border-stone-200">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-[#A1887F]">
+          Skin Concern
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {SKIN_CONCERNS.map((c) => {
+            const selected = activeConcerns.includes(c.value);
+            return (
+              <button
+                key={c.value}
+                aria-pressed={selected}
+                onClick={() => toggleListParam("skinConcern", c.value)}
+                className={`px-3 py-2 rounded-full text-[10px] font-bold uppercase border ${
+                  selected
+                    ? "bg-linear-to-r from-[#360718] via-[#8E1454] to-[#360718] text-white border-transparent"
+                    : "bg-white text-stone-500 border-stone-200"
+                }`}
+              >
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <label className="flex cursor-pointer items-center justify-between gap-3 bg-stone-100 p-4 rounded-2xl border border-stone-200">
+        <span>
+          <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#A1887F]">
+            Combo Deals
+          </span>
+          <span className="text-[11px] text-stone-500">
+            Show only product sets
+          </span>
+        </span>
+        <input
+          type="checkbox"
+          checked={combosOnly}
+          onChange={(e) => setCombosOnly(e.target.checked)}
+          className="h-4 w-4 accent-[#300332]"
+        />
+      </label>
 
       <div className="bg-stone-100 p-4 rounded-2xl border border-stone-200">
         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-[#A1887F]">
@@ -344,11 +455,13 @@ export default function ProductListing() {
     <div className="min-h-screen text-[#1A0D08]">
       {/* Mobile Drawer */}
       <div
-        className={`fixed inset-0 bg-black/40 z-50 lg:hidden transition-opacity ${isMobileFilterOpen ? "visible opacity-100" : "invisible opacity-0"}`}
+        className={`fixed inset-0 bg-black/40 z-60 lg:hidden transition-opacity ${isMobileFilterOpen ? "visible opacity-100" : "invisible opacity-0"}`}
         onClick={() => setIsMobileFilterOpen(false)}
       />
       <div
-        className={`fixed top-0 left-0 h-screen w-[85%] max-w-sm bg-[#FAF9F6] z-50 transition-transform lg:hidden flex flex-col ${
+        // h-dvh, not h-screen: on phones 100vh runs under the browser's URL
+        // bar and hid the last filters. z above the floating bottom nav (z-50).
+        className={`fixed top-0 left-0 h-dvh w-[85%] max-w-sm bg-[#FAF9F6] z-70 transition-transform lg:hidden flex flex-col ${
           isMobileFilterOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -361,7 +474,7 @@ export default function ProductListing() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 pb-24 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-6 pb-10 scrollbar-hide">
           {filterContent}
         </div>
       </div>
@@ -375,11 +488,49 @@ export default function ProductListing() {
         />
 
         <div className="flex flex-col lg:flex-row gap-10">
-          <aside className="hidden lg:block w-72 sticky top-24 self-start">
+          {/* Sticky, but capped to the viewport with its own scroll, so a long
+              filter list stays reachable without scrolling the whole page to
+              its end. overscroll-contain stops the page scrolling when the
+              list hits its top or bottom. */}
+          <aside className="hidden lg:block w-72 shrink-0 sticky top-24 self-start max-h-[calc(100dvh-7rem)] overflow-y-auto overscroll-contain pr-2 -mr-2 pb-6 scrollbar-thin [scrollbar-color:#E3CFDA_transparent]">
             {filterContent}
           </aside>
 
         <main className="flex-1">
+          {/* Active skin / combo filters, each removable on its own. */}
+          {(activeSkinTypes.length > 0 ||
+            activeConcerns.length > 0 ||
+            combosOnly) && (
+            <div className="mb-4 flex flex-wrap items-center gap-2 font-montserrat">
+              {activeSkinTypes.map((value) => (
+                <button
+                  key={`t-${value}`}
+                  onClick={() => toggleListParam("skinType", value)}
+                  className="flex items-center gap-1.5 rounded-full bg-[#300332] px-3 py-1.5 text-[11px] font-semibold text-white"
+                >
+                  {skinTypeLabel(value)} <X size={12} />
+                </button>
+              ))}
+              {activeConcerns.map((value) => (
+                <button
+                  key={`c-${value}`}
+                  onClick={() => toggleListParam("skinConcern", value)}
+                  className="flex items-center gap-1.5 rounded-full bg-[#300332] px-3 py-1.5 text-[11px] font-semibold text-white"
+                >
+                  {skinConcernLabel(value)} <X size={12} />
+                </button>
+              ))}
+              {combosOnly && (
+                <button
+                  onClick={() => setCombosOnly(false)}
+                  className="flex items-center gap-1.5 rounded-full bg-[#300332] px-3 py-1.5 text-[11px] font-semibold text-white"
+                >
+                  Combo Deals <X size={12} />
+                </button>
+              )}
+            </div>
+          )}
+
           <div className="flex justify-between items-center mb-4 md:mb-8 border-b border-stone-200 pb-3 md:pb-5">
             <button
               onClick={() => setIsMobileFilterOpen(true)}
@@ -391,7 +542,7 @@ export default function ProductListing() {
               variant="outline"
               className="hidden md:inline-flex text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#A1887F] font-montserrat border-none px-0"
             >
-              {products.length} Products
+              {totalProducts} {totalProducts === 1 ? "Product" : "Products"}
             </Badge>
             <select
               aria-label="Sort products"

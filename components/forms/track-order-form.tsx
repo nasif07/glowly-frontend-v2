@@ -99,7 +99,7 @@ export function TrackOrderForm() {
                       #{ord.orderId?.toUpperCase() || "NEW"}
                     </p>
                     <p className="text-xs text-stone-500 uppercase italic">
-                      {ord.orderStatus} — {ord.products?.length || 0} Items
+                      {ord.orderStatus} — {ord.items?.length || 0} Items
                     </p>
                   </div>
                   <div className="text-right">
@@ -183,7 +183,7 @@ export function TrackOrderForm() {
                     Package Contents
                   </h4>
                   <div className="space-y-3">
-                    {selectedOrder.products?.map((item, idx) => (
+                    {selectedOrder.items?.map((item, idx) => (
                       <div
                         key={idx}
                         className="flex justify-between border-b border-stone-50 pb-2 text-[15px]"

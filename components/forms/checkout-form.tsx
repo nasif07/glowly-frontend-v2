@@ -25,25 +25,29 @@ import {
   makePaymentDetailsSchema,
   makeCreateOrderSchema,
 } from "@/lib/schemas";
-import {
-  useCartStore,
-  useCartSubtotal,
-  CART_SHIPPING_CHARGE,
-} from "@/hooks/use-cart";
+import { useCartStore, useCartSubtotal } from "@/hooks/use-cart";
 import {
   useStoreSettings,
+  useDeliveryCharge,
   DEFAULT_STORE_SETTINGS,
 } from "@/hooks/use-settings";
 import { useCreateOrder } from "@/hooks/use-orders";
 import { useAuth } from "@/hooks/use-auth";
 import { getErrorMessage } from "@/lib/api-error";
+import {
+  findOrderLineProblem,
+  ORDER_LINE_ACTION_LABEL,
+  type OrderLineAction,
+} from "@/lib/order-line-errors";
 import { allLocation } from "@/lib/constants/locations";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/track-event";
 import { Form } from "@/components/ui/form";
 import { GlowButton } from "@/components/forms/glow-button";
+import { ShadeTag } from "@/components/common/shade-swatch";
+import { BundleContents } from "@/components/cart/bundle-contents";
+import type { CartItem } from "@/types";
 
 const BKASH_NUMBER = "01575808878";
-const DELIVERY_CHARGE = CART_SHIPPING_CHARGE;
 
 /**
  * The entered-fields schema depends on the store payment policy: in full
@@ -92,6 +96,7 @@ export function CheckoutForm() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
+  const removeItem = useCartStore((s) => s.removeItem);
   const storedSubtotal = useCartSubtotal();
   const createOrder = useCreateOrder();
   const { user } = useAuth();
@@ -115,6 +120,7 @@ export function CheckoutForm() {
     settings?.advanceRequired ?? DEFAULT_STORE_SETTINGS.advanceRequired;
   const minAdvance =
     settings?.advanceAmount ?? DEFAULT_STORE_SETTINGS.advanceAmount;
+  const deliveryCharge = useDeliveryCharge();
 
   const checkoutFormSchema = useMemo(
     () => makeCheckoutFormSchema(advanceRequired, minAdvance),
@@ -170,6 +176,15 @@ export function CheckoutForm() {
   // immediately after they paid.
   const orderPlaced = useRef(false);
 
+  // A line the API refused — no shade or option picked (a line added before
+  // the product had them, or from an old tab), or not enough stock left.
+  // Shown in place of the generic error, pointing at the product page.
+  const [lineProblem, setLineProblem] = useState<{
+    message: string;
+    action: OrderLineAction;
+    item?: CartItem;
+  } | null>(null);
+
   // Redirect out of an empty cart, matching the original guard.
   useEffect(() => {
     if (!mounted || orderPlaced.current) return;
@@ -177,13 +192,13 @@ export function CheckoutForm() {
       toast.error("Your cart is empty");
       router.push("/shop");
     } else {
-      trackInitiateCheckout(items, subtotal + DELIVERY_CHARGE, user);
+      trackInitiateCheckout(items, subtotal + deliveryCharge, user);
     }
     // Fire once per checkout session — items/subtotal don't change on this page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted, items.length, router]);
 
-  const totalWithShipping = subtotal + DELIVERY_CHARGE;
+  const totalWithShipping = subtotal + deliveryCharge;
   const dueAmount = totalWithShipping - advanceAmount;
 
   const copyToClipboard = () => {
@@ -192,6 +207,7 @@ export function CheckoutForm() {
   };
 
   const onSubmit = (values: CheckoutFormValues) => {
+    setLineProblem(null);
     const parsed = makeCreateOrderSchema(advanceRequired, minAdvance).safeParse({
       products: items.map((item) => ({
         title: item.title,
@@ -202,7 +218,7 @@ export function CheckoutForm() {
         image: item.image,
       })),
       subtotal,
-      shippingCharge: DELIVERY_CHARGE,
+      shippingCharge: deliveryCharge,
       advanceAmount,
       dueAmount,
       totalAmount: totalWithShipping,
@@ -236,7 +252,11 @@ export function CheckoutForm() {
         clearCart();
         router.push("/order-success");
       },
-      onError: (error) => toast.error(getErrorMessage(error, "Order failed.")),
+      onError: (error) => {
+        const message = getErrorMessage(error, "Order failed.");
+        setLineProblem(findOrderLineProblem(error, message, items));
+        toast.error(message);
+      },
     });
   };
 
@@ -496,6 +516,17 @@ export function CheckoutForm() {
                         <p className="truncate text-sm font-black text-[#2D1B14]">
                           {item.title}
                         </p>
+                        {item.isShade && item.variant && (
+                          <ShadeTag
+                            name={item.variant.color}
+                            hex={item.variant.hex}
+                            className="text-xs font-bold text-[#8D6E63]"
+                          />
+                        )}
+                        <BundleContents
+                          contents={item.bundleContents}
+                          className="line-clamp-2"
+                        />
                         <p className="font-montserrat text-lg font-bold text-[#A1887F]">
                           ৳{item.price}
                         </p>
@@ -513,7 +544,9 @@ export function CheckoutForm() {
                     <span className="flex items-center gap-2">
                       <Truck size={18} /> Delivery
                     </span>
-                    <span className="font-montserrat">৳{DELIVERY_CHARGE}</span>
+                    <span className="font-montserrat">
+                      {deliveryCharge === 0 ? "Free" : `৳${deliveryCharge}`}
+                    </span>
                   </div>
                   {advanceRequired && (
                     <div className="flex justify-between rounded-xl border border-amber-100 bg-amber-50 p-3 text-base font-black text-amber-700">
@@ -530,6 +563,40 @@ export function CheckoutForm() {
                     </span>
                   </div>
                 </div>
+
+                {lineProblem && (
+                  <div
+                    role="alert"
+                    className="mt-6 flex gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4"
+                  >
+                    <AlertCircle className="shrink-0 text-rose-500" size={20} />
+                    <div className="min-w-0 text-sm">
+                      <p className="font-bold text-rose-700">
+                        {lineProblem.message}
+                      </p>
+                      {lineProblem.item && (
+                        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+                          <Link
+                            href={`/products/${lineProblem.item.slug || lineProblem.item._id}`}
+                            className="font-black text-[#2D1B14] underline underline-offset-2"
+                          >
+                            {ORDER_LINE_ACTION_LABEL[lineProblem.action]}
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              removeItem(lineProblem.item!.cartId);
+                              setLineProblem(null);
+                            }}
+                            className="text-xs font-bold text-rose-600 underline underline-offset-2"
+                          >
+                            Remove it from your bag
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <GlowButton
                   type="submit"

@@ -8,9 +8,28 @@ export const orderStatusSchema = z.enum([
   "cancelled",
 ]);
 
+/**
+ * A Bangladeshi mobile number. Mirrors `bdPhoneSchema` on the API
+ * (glowly-backend/src/modules/order/order.validation.js) — keep the two in
+ * step, or the customer gets a server rejection with no field to fix.
+ *
+ * Punctuation and a +88 prefix are stripped rather than rejected, so
+ * "01812-345678" and "+8801812345678" both submit as "01812345678".
+ */
+const bdPhoneSchema = z
+  .string()
+  .trim()
+  .min(1, "Phone number is required")
+  .transform((value) =>
+    value.replace(/\D/g, "").replace(/^88(?=01\d{9}$)/, ""),
+  )
+  .refine((value) => /^01\d{9}$/.test(value), {
+    message: "Enter a valid 11-digit mobile number, e.g. 01812345678",
+  });
+
 export const shippingAddressSchema = z.object({
   name: z.string().min(1, "Full name is required"),
-  phone: z.string().min(1, "Phone number is required"),
+  phone: bdPhoneSchema,
   address: z.string().min(1, "Address is required"),
   city: z.string().min(1, "Please select your district"),
   thana: z.string().min(1, "Please select your Thana/Upazila"),
@@ -26,7 +45,7 @@ export const shippingAddressSchema = z.object({
  */
 export const makePaymentDetailsSchema = (minAdvance: number) =>
   z.object({
-    senderNumber: z.string().min(1, "Your bKash number is required"),
+    senderNumber: bdPhoneSchema,
     transactionId: z
       .string()
       .min(1, "Transaction ID is required")

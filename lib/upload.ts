@@ -17,6 +17,7 @@ export type UploadFolder =
   | "categories"
   | "blog"
   | "hero"
+  | "skin-types"
   | "profile";
 
 export interface UploadedMedia {
@@ -147,3 +148,36 @@ export const uploadVideo = async (
 export const deleteMedia = async (key: string) => {
   await api.delete("/upload", { data: { key } });
 };
+
+/**
+ * Upload one skin consultation photo (public, no login). It goes to the
+ * API's private bucket, so nothing viewable comes back — only a token the
+ * form sends with the request. Preview the photo from the local File.
+ */
+export const uploadConsultationPhoto = (
+  file: File,
+  onProgress: (pct: number) => void,
+) =>
+  new Promise<{ token: string }>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE}/consultations/photos`);
+    xhr.setRequestHeader("Content-Type", file.type);
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const { data } = JSON.parse(xhr.responseText);
+          onProgress(100);
+          resolve({ token: data.token });
+          return;
+        } catch {
+          reject(new Error("Upload failed"));
+          return;
+        }
+      }
+      reject(new Error(messageFromResponse(xhr.responseText, "Upload failed")));
+    };
+
+    xhr.onerror = () => reject(new Error("Upload failed"));
+    sendWithProgress(xhr, file, onProgress);
+  });

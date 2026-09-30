@@ -1,4 +1,4 @@
-import type { ProductsQuery } from "@/types";
+import type { ConsultationsQuery, ProductsQuery } from "@/types";
 import type { BlogsQuery } from "@/types/blog";
 
 /**
@@ -15,7 +15,11 @@ export const queryKeys = {
     lists: () => [...queryKeys.products.all, "list"] as const,
     list: (params: ProductsQuery = {}) =>
       [...queryKeys.products.lists(), params] as const,
+    /** The full catalogue, walked page by page — see `useAllProducts`. */
+    allList: (params: Omit<ProductsQuery, "page" | "limit"> = {}) =>
+      [...queryKeys.products.lists(), "all", params] as const,
     featured: () => [...queryKeys.products.all, "featured"] as const,
+    newArrivals: () => [...queryKeys.products.all, "new-arrivals"] as const,
     details: () => [...queryKeys.products.all, "detail"] as const,
     detail: (id: string) => [...queryKeys.products.details(), id] as const,
   },
@@ -45,9 +49,25 @@ export const queryKeys = {
     public: () => [...queryKeys.hero.all, "public"] as const,
     manage: () => [...queryKeys.hero.all, "manage"] as const,
   },
+  skinTypes: {
+    all: ["skin-types"] as const,
+    list: () => [...queryKeys.skinTypes.all, "list"] as const,
+  },
   settings: {
     all: ["settings"] as const,
     store: () => [...queryKeys.settings.all, "store"] as const,
+  },
+  notifications: {
+    all: ["notifications"] as const,
+    list: () => [...queryKeys.notifications.all, "list"] as const,
+  },
+  consultations: {
+    all: ["consultations"] as const,
+    lists: () => [...queryKeys.consultations.all, "list"] as const,
+    list: (params: ConsultationsQuery = {}) =>
+      [...queryKeys.consultations.lists(), params] as const,
+    detail: (id: string) =>
+      [...queryKeys.consultations.all, "detail", id] as const,
   },
   orders: {
     all: ["orders"] as const,

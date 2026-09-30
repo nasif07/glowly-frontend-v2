@@ -10,15 +10,15 @@ export function BalanceCard() {
     useSteadfastBalance();
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[#E8D8C3] bg-white p-6 shadow-sm">
-      <div className="absolute top-0 right-0 -mt-10 -mr-10 h-28 w-28 rounded-full bg-[#F9F1E7] opacity-60" />
+    <div className="relative overflow-hidden rounded-3xl border border-[#EFDFE7] bg-white p-6 shadow-sm">
+      <div className="absolute top-0 right-0 -mt-10 -mr-10 h-28 w-28 rounded-full bg-[#FBF4F7] opacity-60" />
       <div className="relative z-10 flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="rounded-2xl border border-[#300332]/10 bg-[#F9F1E7] p-3">
+          <div className="rounded-2xl border border-[#300332]/10 bg-[#FBF4F7] p-3">
             <Wallet className="h-5 w-5 text-[#300332]" />
           </div>
           <div>
-            <p className="text-[11px] font-bold tracking-[0.2em] text-[#8C6A5E] uppercase">
+            <p className="text-[11px] font-bold tracking-[0.2em] text-[#8A6F80] uppercase">
               Steadfast Balance
             </p>
             {isLoading ? (
@@ -39,7 +39,7 @@ export function BalanceCard() {
           type="button"
           onClick={() => refetch()}
           disabled={isFetching}
-          className="group rounded-full border border-[#300332]/10 bg-white p-2.5 transition-all hover:bg-[#F9F1E7] disabled:opacity-50"
+          className="group rounded-full border border-[#300332]/10 bg-white p-2.5 transition-all hover:bg-[#FBF4F7] disabled:opacity-50"
           aria-label="Refresh balance"
         >
           <RefreshCw

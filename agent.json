@@ -1,0 +1,60 @@
+{
+"schema_version": "1.0",
+"name": "Glowly",
+"url": "https://glowlybd.com/",
+"description": "Glowly is an online skincare retailer in Bangladesh offering authentic international and Korean skincare products from established global brands.",
+"type": "online_skincare_retailer",
+"founded": "2026",
+"location": {
+"city": "Chattogram",
+"country": "Bangladesh"
+},
+"contact": {
+"email": "[glowlybd@gmail.com](mailto:glowlybd@gmail.com)",
+"phone": "+8801575808878"
+},
+"categories": [
+"skincare",
+"beauty products",
+"Korean skincare",
+"international skincare"
+],
+"brands": [
+"The Ordinary",
+"Anua",
+"Purito",
+"COSRX",
+"CeraVe",
+"Beauty of Joseon"
+],
+"services": [
+"online skincare shopping",
+"skincare product discovery",
+"product authenticity information",
+"order tracking",
+"skincare education"
+],
+"resources": {
+"llms_txt": "https://glowlybd.com/llms.txt",
+"shop": "https://glowlybd.com/shop",
+"blog": "https://glowlybd.com/blog",
+"about": "https://glowlybd.com/about",
+"transparency": "https://glowlybd.com/transparency",
+"track_order": "https://glowlybd.com/track-order",
+"authenticity_verification": "https://glowlybd.com/authenticity-verification"
+},
+"trust": {
+"authenticity": {
+"claim": "Glowly states that its skincare products are sourced through authorized distributors and are supplied as authentic products.",
+"verification": "Where supported by the manufacturer, customers may use official brand verification methods or manufacturer-provided batch codes to verify product information."
+}
+},
+"capabilities": [
+"search_products",
+"product_information",
+"authenticity_information",
+"order_tracking",
+"skincare_education",
+"contact"
+]
+}

@@ -53,9 +53,9 @@ export function TrackOrderPanel() {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[#E8D8C3] bg-white p-6 shadow-sm md:p-8">
+    <div className="relative overflow-hidden rounded-3xl border border-[#EFDFE7] bg-white p-6 shadow-sm md:p-8">
       <div className="mb-6 flex items-center gap-3">
-        <div className="rounded-2xl border border-[#300332]/10 bg-[#F9F1E7] p-2.5">
+        <div className="rounded-2xl border border-[#300332]/10 bg-[#FBF4F7] p-2.5">
           <Truck className="h-5 w-5 text-[#300332]" />
         </div>
         <h2 className="text-lg font-bold text-[#2D1B14]">Track Delivery Status</h2>
@@ -63,7 +63,7 @@ export function TrackOrderPanel() {
 
       <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row">
         <Select value={searchBy} onValueChange={(v) => setSearchBy(v as SearchBy)}>
-          <SelectTrigger className="h-auto rounded-xl border border-[#D4BFAA] bg-[#FCFAF8] px-4 py-2.5 text-sm text-[#4B2E2B] sm:w-52">
+          <SelectTrigger className="h-auto rounded-xl border border-[#E3CFDA] bg-[#FBF4F7] px-4 py-2.5 text-sm text-[#300332] sm:w-52">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -79,27 +79,27 @@ export function TrackOrderPanel() {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={`Enter ${SEARCH_BY_LABEL[searchBy].toLowerCase()}`}
-          className="h-auto flex-1 rounded-xl border border-[#D4BFAA] bg-[#FCFAF8] px-4 py-2.5 text-sm text-[#4B2E2B] shadow-none focus-visible:border-[#6B4A3D] focus-visible:ring-4 focus-visible:ring-[#6B4A3D]/5"
+          className="h-auto flex-1 rounded-xl border border-[#E3CFDA] bg-[#FBF4F7] px-4 py-2.5 text-sm text-[#300332] shadow-none focus-visible:border-[#6B2D5C] focus-visible:ring-4 focus-visible:ring-[#6B2D5C]/5"
         />
 
         <GlowButton
           type="submit"
           disabled={query.isFetching}
-          className="rounded-xl bg-[#4B2E2B] px-6 py-2.5 text-xs font-bold tracking-widest text-white uppercase shadow-none hover:bg-[#321E1B]"
+          className="rounded-xl bg-[#300332] px-6 py-2.5 text-xs font-bold tracking-widest text-white uppercase shadow-none hover:bg-[#321E1B]"
         >
           <Search size={14} /> {query.isFetching ? "Searching..." : "Search"}
         </GlowButton>
       </form>
 
       {result && (
-        <div className="mt-6 rounded-2xl border border-[#E8D8C3] bg-[#FDF8F3] p-6">
+        <div className="mt-6 rounded-2xl border border-[#EFDFE7] bg-[#FBF4F7] p-6">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-bold tracking-wide text-[#8C6A5E] uppercase">
+            <p className="text-xs font-bold tracking-wide text-[#8A6F80] uppercase">
               Delivery Status
             </p>
             <DeliveryStatusBadge status={result.delivery_status} />
           </div>
-          <div className="mt-3 grid grid-cols-1 gap-1 text-sm text-[#4B2E2B] sm:grid-cols-3">
+          <div className="mt-3 grid grid-cols-1 gap-1 text-sm text-[#300332] sm:grid-cols-3">
             {result.consignment_id !== undefined && (
               <p>
                 <span className="font-semibold">Consignment ID:</span>{" "}

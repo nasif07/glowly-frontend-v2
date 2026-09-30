@@ -24,9 +24,9 @@ import {
 } from "@/components/ui/select";
 import { GlowButton } from "@/components/forms/glow-button";
 
-const fieldLabel = "mb-1.5 block text-xs font-semibold text-[#4B2E2B]";
+const fieldLabel = "mb-1.5 block text-xs font-semibold text-[#300332]";
 const fieldInput =
-  "h-auto rounded-xl border border-[#D4BFAA] bg-[#FCFAF8] px-4 py-2.5 text-sm text-[#4B2E2B] shadow-none focus-visible:border-[#6B4A3D] focus-visible:ring-4 focus-visible:ring-[#6B4A3D]/5";
+  "h-auto rounded-xl border border-[#E3CFDA] bg-[#FBF4F7] px-4 py-2.5 text-sm text-[#300332] shadow-none focus-visible:border-[#6B2D5C] focus-visible:ring-4 focus-visible:ring-[#6B2D5C]/5";
 
 export function CreateOrderForm() {
   const [result, setResult] = useState<SteadfastOrderResponse | null>(null);
@@ -71,11 +71,11 @@ export function CreateOrderForm() {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[#E8D8C3] bg-white p-6 shadow-sm md:p-8">
-      <div className="absolute top-0 right-0 -mt-16 -mr-16 h-32 w-32 rounded-full bg-[#F9F1E7] opacity-50" />
+    <div className="relative overflow-hidden rounded-3xl border border-[#EFDFE7] bg-white p-6 shadow-sm md:p-8">
+      <div className="absolute top-0 right-0 -mt-16 -mr-16 h-32 w-32 rounded-full bg-[#FBF4F7] opacity-50" />
 
       <div className="relative z-10 mb-6 flex items-center gap-3">
-        <div className="rounded-2xl border border-[#300332]/10 bg-[#F9F1E7] p-2.5">
+        <div className="rounded-2xl border border-[#300332]/10 bg-[#FBF4F7] p-2.5">
           <PackagePlus className="h-5 w-5 text-[#300332]" />
         </div>
         <h2 className="text-lg font-bold text-[#2D1B14]">Create Courier Order</h2>
@@ -227,7 +227,7 @@ export function CreateOrderForm() {
           <GlowButton
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-2xl bg-[#4B2E2B] py-3.5 text-xs font-bold tracking-[2px] text-white uppercase shadow-lg shadow-[#4B2E2B]/20 transition-all hover:bg-[#321E1B]"
+            className="w-full rounded-2xl bg-[#300332] py-3.5 text-xs font-bold tracking-[2px] text-white uppercase shadow-lg shadow-[#300332]/20 transition-all hover:bg-[#321E1B]"
           >
             {isSubmitting ? "Creating Order..." : "Create Order"}
           </GlowButton>

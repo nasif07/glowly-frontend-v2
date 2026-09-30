@@ -1,5 +1,6 @@
 import { api } from "./axios";
 import type { User } from "@/types";
+import { getUnitPrice } from "./pricing";
 
 interface TrackEventData {
   email?: string;
@@ -37,14 +38,14 @@ function userData(
 interface TrackableProduct {
   _id: string;
   price: number;
-  discountPrice?: number;
+  discountPrice: number;
 }
 
 /** Tracked when a product page is viewed. */
 export function trackViewContent(product: TrackableProduct, user?: User | null) {
   trackEvent("ViewContent", {
     ...userData(user),
-    value: product.discountPrice || product.price || 0,
+    value: getUnitPrice(product),
     currency: "BDT",
     content_ids: [product._id],
   });
@@ -58,7 +59,7 @@ export function trackAddToCart(
 ) {
   trackEvent("AddToCart", {
     ...userData(user),
-    value: (product.discountPrice || product.price || 0) * quantity,
+    value: getUnitPrice(product) * quantity,
     currency: "BDT",
     content_ids: [product._id],
   });
@@ -81,13 +82,13 @@ export function trackInitiateCheckout(
 
 /** Tracked right after an order is successfully created. */
 export function trackPurchase(
-  order: { totalAmount: number; products?: { productId: string }[] },
+  order: { totalAmount: number; items?: { product?: string }[] },
   user?: User | null,
 ) {
   trackEvent("Purchase", {
     ...userData(user),
     value: order.totalAmount,
     currency: "BDT",
-    content_ids: (order.products ?? []).map((p) => p.productId),
+    content_ids: (order.items ?? []).flatMap((i) => (i.product ? [i.product] : [])),
   });
 }

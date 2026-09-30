@@ -11,6 +11,8 @@ export interface PaginationMeta {
   limit: number;
   total: number;
   totalPage: number;
+  /** Whether a later page has more items. */
+  hasMore?: boolean;
 }
 
 export interface ApiResponse<T> {

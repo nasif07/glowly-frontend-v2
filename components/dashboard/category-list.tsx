@@ -48,15 +48,15 @@ export function CategoryList() {
               style={{ marginLeft: `${level * 32}px` }}
             >
               {level > 0 && (
-                <CornerDownRight className="h-4 w-4 shrink-0 text-[#A67B5B]" />
+                <CornerDownRight className="h-4 w-4 shrink-0 text-[#C4891E]" />
               )}
               <div>
                 <p
-                  className={`font-bold ${level > 0 ? "text-sm text-[#6B4A3D]" : "text-[#4B2E2B]"}`}
+                  className={`font-bold ${level > 0 ? "text-sm text-[#6B2D5C]" : "text-[#300332]"}`}
                 >
                   {cat.name}
                 </p>
-                <p className="text-[10px] font-medium tracking-wider text-[#8C6A5E] uppercase">
+                <p className="text-[10px] font-medium tracking-wider text-[#8A6F80] uppercase">
                   {cat.slug}
                 </p>
               </div>
@@ -64,7 +64,7 @@ export function CategoryList() {
           </td>
           <td className="px-6 py-4">
             {cat.image ? (
-              <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-[#E0C9A6]">
+              <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-[#EAD9E2]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={cat.image} alt="" className="h-full w-full object-cover" />
               </div>
@@ -89,7 +89,7 @@ export function CategoryList() {
             <div className="flex justify-end gap-3">
               <Link
                 href={`/dashboard/categories/edit/${cat._id}`}
-                className="inline-flex items-center gap-1 text-[#6B4A3D] hover:text-[#4B2E2B]"
+                className="inline-flex items-center gap-1 text-[#6B2D5C] hover:text-[#300332]"
               >
                 <Pencil className="h-4 w-4" /> Edit
               </Link>
@@ -121,42 +121,42 @@ export function CategoryList() {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="h-16 w-full animate-pulse rounded-2xl border border-[#E0C9A6] bg-white" />
+            <div key={n} className="h-16 w-full animate-pulse rounded-2xl border border-[#EAD9E2] bg-white" />
           ))}
         </div>
       ) : categories.length === 0 ? (
-        <div className="rounded-3xl border-2 border-dashed border-[#E0C9A6] bg-white p-12 text-center">
-          <Boxes className="mx-auto mb-4 h-12 w-12 text-[#E0C9A6]" />
-          <h3 className="text-lg font-bold text-[#4B2E2B]">No categories yet</h3>
-          <p className="mb-6 text-[#8C6A5E]">Start by adding your first product category.</p>
+        <div className="rounded-3xl border-2 border-dashed border-[#EAD9E2] bg-white p-12 text-center">
+          <Boxes className="mx-auto mb-4 h-12 w-12 text-[#EAD9E2]" />
+          <h3 className="text-lg font-bold text-[#300332]">No categories yet</h3>
+          <p className="mb-6 text-[#8A6F80]">Start by adding your first product category.</p>
           <Link
             href="/dashboard/categories/add"
-            className="font-bold text-[#4B2E2B] underline underline-offset-4"
+            className="font-bold text-[#300332] underline underline-offset-4"
           >
             Create Category
           </Link>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-3xl border border-[#E0C9A6] bg-white shadow-sm">
+        <div className="overflow-hidden rounded-3xl border border-[#EAD9E2] bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[700px] border-collapse text-left">
               <thead className="bg-[#FDFBF7]">
                 <tr>
-                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
                     Name & Slug
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
                     Thumbnail
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
                     Home Display
                   </th>
-                  <th className="px-6 py-4 text-right text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+                  <th className="px-6 py-4 text-right text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#FBF6EF]">{renderRows(categories)}</tbody>
+              <tbody className="divide-y divide-[#FBF4F7]">{renderRows(categories)}</tbody>
             </table>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { FileSearch } from "lucide-react";
-import { BLOG_CATEGORIES, getCategoryName, localizePost } from "@/lib/blog";
+import { collectCategories, matchesQuery, type BlogView } from "@/lib/blog";
 import { t } from "@/lib/i18n";
 import { useLang } from "@/hooks/use-language";
 import BlogHero from "@/components/blog/blog-hero";
@@ -10,62 +10,31 @@ import BlogCard from "@/components/blog/blog-card";
 import BlogSidebar from "@/components/blog/blog-sidebar";
 import Pagination from "@/components/blog/pagination";
 import LanguageToggle from "@/components/blog/language-toggle";
-import type { BlogCategorySlug, BlogPost, RawBlogPost } from "@/types/blog";
-
-type Filter = BlogCategorySlug | "all";
 
 const PAGE_SIZE = 6;
 
-function matchesQuery(post: BlogPost, q: string): boolean {
-  const needle = q.trim().toLowerCase();
-  if (!needle) return true;
-  const haystack = [
-    post.title,
-    post.excerpt,
-    ...post.content.map((b) =>
-      b.type === "paragraph" || b.type === "heading" || b.type === "quote"
-        ? b.text
-        : "",
-    ),
-  ]
-    .join(" ")
-    .toLowerCase();
-  return haystack.includes(needle);
-}
-
 export default function BlogListing({
-  posts: rawPosts,
-  featured: rawFeatured,
-  popular: rawPopular,
+  posts,
+  featured,
+  popular,
 }: {
-  posts: RawBlogPost[];
-  featured: RawBlogPost;
-  popular: RawBlogPost[];
+  posts: BlogView[];
+  /** Null when the blog has no published posts yet. */
+  featured: BlogView | null;
+  popular: BlogView[];
 }) {
   const { lang } = useLang();
 
   const [query, setQuery] = useState("");
-  const [active, setActive] = useState<Filter>("all");
+  const [active, setActive] = useState<string>("all");
   const [page, setPage] = useState(1);
-
-  // Resolve the bilingual source data to the active language once per change.
-  const posts = useMemo(
-    () => rawPosts.map((p) => localizePost(p, lang)),
-    [rawPosts, lang],
-  );
-  const featured = useMemo(
-    () => localizePost(rawFeatured, lang),
-    [rawFeatured, lang],
-  );
-  const popular = useMemo(
-    () => rawPopular.map((p) => localizePost(p, lang)),
-    [rawPopular, lang],
-  );
 
   // Reset to first page whenever the filter or search changes.
   useEffect(() => {
     setPage(1);
   }, [query, active]);
+
+  const categories = useMemo(() => collectCategories(posts), [posts]);
 
   const searchFiltered = useMemo(
     () => posts.filter((p) => matchesQuery(p, query)),
@@ -74,11 +43,13 @@ export default function BlogListing({
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: searchFiltered.length };
-    for (const cat of BLOG_CATEGORIES) {
-      c[cat.slug] = searchFiltered.filter((p) => p.category === cat.slug).length;
+    for (const name of categories) {
+      c[name] = searchFiltered.filter((p) => p.category === name).length;
     }
     return c;
-  }, [searchFiltered]);
+  }, [searchFiltered, categories]);
+
+  const showHero = featured !== null && active === "all" && query.trim() === "";
 
   const filtered = useMemo(() => {
     const byCategory =
@@ -86,19 +57,18 @@ export default function BlogListing({
         ? searchFiltered
         : searchFiltered.filter((p) => p.category === active);
     // On the default view, the featured post already headlines the hero.
-    const isDefault = active === "all" && query.trim() === "";
-    return isDefault
-      ? byCategory.filter((p) => p.id !== featured.id)
+    return showHero
+      ? byCategory.filter((p) => p.id !== featured?.id)
       : byCategory;
-  }, [searchFiltered, active, query, featured.id]);
+  }, [searchFiltered, active, showHero, featured?.id]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const showHero = active === "all" && query.trim() === "";
-
   return (
-    <div className={`min-h-screen bg-[#F5F3F0] ${lang === "bn" ? "font-bengali" : ""}`}>
+    <div
+      className={`min-h-screen bg-[#F5F3F0] ${lang === "bn" ? "font-bengali" : ""}`}
+    >
       <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
         {/* Page header */}
         <header className="mb-10">
@@ -118,16 +88,14 @@ export default function BlogListing({
           </div>
         </header>
 
-        {showHero && <BlogHero post={featured} />}
+        {showHero && featured && <BlogHero post={featured} />}
 
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
           {/* Main column */}
           <main>
             <div className="mb-6 flex items-baseline justify-between">
               <h2 className="text-2xl font-bold text-[#2D1B14]">
-                {active === "all"
-                  ? t("latestArticles", lang)
-                  : getCategoryName(active, lang)}
+                {active === "all" ? t("latestArticles", lang) : active}
               </h2>
               <span className="text-xs font-semibold uppercase tracking-widest text-[#300332]/40 font-montserrat">
                 {filtered.length}{" "}
@@ -152,10 +120,14 @@ export default function BlogListing({
                 <FileSearch size={40} className="text-[#300332]/30" />
                 <div>
                   <p className="text-lg font-bold text-[#2D1B14]">
-                    {t("noResultsTitle", lang)}
+                    {posts.length === 0
+                      ? t("journalTitle", lang)
+                      : t("noResultsTitle", lang)}
                   </p>
                   <p className="mt-1 text-sm text-[#300332]/50 font-montserrat">
-                    {t("noResultsBody", lang)}
+                    {posts.length === 0
+                      ? "No articles have been published yet — check back soon."
+                      : t("noResultsBody", lang)}
                   </p>
                 </div>
               </div>
@@ -172,6 +144,7 @@ export default function BlogListing({
                 onQuery={setQuery}
                 active={active}
                 onCategory={setActive}
+                categories={categories}
                 counts={counts}
                 popular={popular}
               />

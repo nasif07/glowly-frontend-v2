@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { api } from "@/lib/axios";
-import { getAllPosts } from "@/lib/blog-data";
+import { getPublishedPosts } from "@/lib/blog-api";
 import { SITE_URL } from "@/lib/site";
 import type { PaginatedResponse, Product } from "@/types";
 
@@ -17,6 +17,7 @@ const STATIC_ROUTES: {
   { path: "/about", changeFrequency: "monthly", priority: 0.7 },
   { path: "/transparency", changeFrequency: "monthly", priority: 0.7 },
   { path: "/authenticity-verification", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/skin-consultation", changeFrequency: "monthly", priority: 0.7 },
   { path: "/track-order", changeFrequency: "monthly", priority: 0.6 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.6 },
   { path: "/shipping-delivery-policy", changeFrequency: "yearly", priority: 0.4 },
@@ -56,23 +57,32 @@ async function getProductSlugs(): Promise<string[]> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [productSlugs, posts] = await Promise.all([
     getProductSlugs(),
-    Promise.resolve(getAllPosts()),
+    getPublishedPosts(),
   ]);
+
+  // `<lastmod>` for every URL. This route is generated at build time, so
+  // "today" is the day the site was last deployed — which is the honest claim
+  // to make when nothing tracks per-page edits. Taken once so the whole
+  // document carries one date rather than entries milliseconds apart.
+  const lastModified = new Date().toISOString().slice(0, 10);
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
     url: `${SITE_URL}${route.path}`,
+    lastModified,
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }));
 
   const productEntries: MetadataRoute.Sitemap = productSlugs.map((slug) => ({
     url: `${SITE_URL}/products/${slug}`,
+    lastModified,
     changeFrequency: "weekly",
     priority: 0.8,
   }));
 
   const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
+    lastModified,
     changeFrequency: "monthly",
     priority: 0.5,
   }));
