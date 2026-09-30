@@ -247,7 +247,7 @@ export default function ProductDetail({
   const handleAddToCart = (showToast = true) => {
     if (cannotBuy) return;
     addItem(product, selectedVariant, quantity);
-    trackAddToCart(product, quantity, user);
+    trackAddToCart(product, quantity, user, selectedVariant);
     if (showToast) toast.success(`${quantity} item(s) added to cart!`);
   };
 

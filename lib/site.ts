@@ -5,6 +5,12 @@ export const SITE_NAME = "Glowly";
 /** Google Analytics 4 measurement id, loaded by the root layout. */
 export const GA_MEASUREMENT_ID = "G-01SNNVTV5E";
 
+/**
+ * Meta Pixel id, loaded by the root layout. Must match the backend's
+ * FACEBOOK_PIXEL_ID so browser and Conversions API events de-duplicate.
+ */
+export const META_PIXEL_ID = "2840798926267920";
+
 /** Single source of truth for the contact details repeated across policy pages. */
 export const CONTACT = {
   phone: "01575808878",

@@ -69,7 +69,7 @@ export default function ProductCard({ product }: { product: Product }) {
     }
 
     addItem(product, onlyVariant, 1);
-    trackAddToCart(product, 1, user);
+    trackAddToCart(product, 1, user, onlyVariant);
     toast.success(`${product.title} added to ritual`, { style: toastStyle });
   };
 

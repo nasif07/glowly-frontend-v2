@@ -7,7 +7,7 @@ import { Search, Loader2, ArrowRight, PackageSearch } from "lucide-react";
 
 import { useProducts } from "@/hooks/use-products";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { trackSearch } from "@/lib/pixel";
+import { trackSearch } from "@/lib/track-event";
 import type { Product } from "@/types";
 import { getUnitPrice, getListPrice } from "@/lib/pricing";
 import { isSoldOutByStock } from "@/lib/stock";

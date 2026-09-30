@@ -247,7 +247,11 @@ export function CheckoutForm() {
     createOrder.mutate(parsed.data, {
       onSuccess: (order) => {
         orderPlaced.current = true;
-        trackPurchase(order, user);
+        trackPurchase(order, user, {
+          name: values.name,
+          phone: values.phone,
+          city: values.city,
+        });
         toast.success("Order placed successfully!");
         clearCart();
         router.push("/order-success");
