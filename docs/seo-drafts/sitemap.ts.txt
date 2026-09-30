@@ -1,0 +1,56 @@
+import type { MetadataRoute } from 'next'
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://glowlybd.com'
+
+  return [
+    {
+      url: baseUrl,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/shop`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/transparency`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/authenticity-verification`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/track-order`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/shipping-delivery-policy`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/return-exchange-policy`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/privacy-policy`,
+      lastModified: '',
+    },
+    {
+      url: `${baseUrl}/terms-condition`,
+      lastModified: '',
+    },
+  ]
+}

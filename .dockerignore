@@ -1,0 +1,21 @@
+node_modules
+npm-debug.log*
+
+# Stale host build output would otherwise be copied in and shadow the build.
+.next
+
+.git
+.gitignore
+.vercel
+
+# NEXT_PUBLIC_* values are passed as --build-arg, not copied in.
+.env
+.env.*
+
+README.md
+AGENTS.md
+CLAUDE.md
+tsconfig.tsbuildinfo
+
+Dockerfile
+.dockerignore

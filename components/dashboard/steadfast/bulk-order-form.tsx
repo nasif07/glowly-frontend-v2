@@ -28,7 +28,7 @@ const emptyItem = {
 };
 
 const cellInput =
-  "h-auto rounded-lg border border-[#D4BFAA] bg-[#FCFAF8] px-3 py-2 text-xs text-[#4B2E2B] shadow-none focus-visible:border-[#6B4A3D] focus-visible:ring-4 focus-visible:ring-[#6B4A3D]/5";
+  "h-auto rounded-lg border border-[#E3CFDA] bg-[#FBF4F7] px-3 py-2 text-xs text-[#300332] shadow-none focus-visible:border-[#6B2D5C] focus-visible:ring-4 focus-visible:ring-[#6B2D5C]/5";
 
 export function BulkOrderForm() {
   const [results, setResults] = useState<SteadfastBulkOrderResult[] | null>(
@@ -63,15 +63,15 @@ export function BulkOrderForm() {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[#E8D8C3] bg-white p-6 shadow-sm md:p-8">
+    <div className="relative overflow-hidden rounded-3xl border border-[#EFDFE7] bg-white p-6 shadow-sm md:p-8">
       <div className="mb-6 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="rounded-2xl border border-[#300332]/10 bg-[#F9F1E7] p-2.5">
+          <div className="rounded-2xl border border-[#300332]/10 bg-[#FBF4F7] p-2.5">
             <Layers className="h-5 w-5 text-[#300332]" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-[#2D1B14]">Bulk Order Create</h2>
-            <p className="text-xs text-[#8C6A5E]">
+            <p className="text-xs text-[#8A6F80]">
               {fields.length} / {MAX_ITEMS} orders
             </p>
           </div>
@@ -97,7 +97,7 @@ export function BulkOrderForm() {
             return (
               <div
                 key={field.id}
-                className="grid grid-cols-1 items-start gap-3 rounded-2xl border border-[#E8D8C3] bg-[#FDF8F3] p-4 md:grid-cols-6"
+                className="grid grid-cols-1 items-start gap-3 rounded-2xl border border-[#EFDFE7] bg-[#FBF4F7] p-4 md:grid-cols-6"
               >
                 <div className="md:col-span-1">
                   <Input
@@ -178,7 +178,7 @@ export function BulkOrderForm() {
         <GlowButton
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-2xl bg-[#4B2E2B] py-3.5 text-xs font-bold tracking-[2px] text-white uppercase shadow-lg shadow-[#4B2E2B]/20 transition-all hover:bg-[#321E1B]"
+          className="w-full rounded-2xl bg-[#300332] py-3.5 text-xs font-bold tracking-[2px] text-white uppercase shadow-lg shadow-[#300332]/20 transition-all hover:bg-[#321E1B]"
         >
           {isSubmitting
             ? "Submitting..."
@@ -188,7 +188,7 @@ export function BulkOrderForm() {
 
       {results && (
         <div className="mt-6 space-y-2">
-          <p className="text-xs font-bold tracking-wide text-[#4B2E2B] uppercase">
+          <p className="text-xs font-bold tracking-wide text-[#300332] uppercase">
             Results
           </p>
           {results.map((r, i) => (

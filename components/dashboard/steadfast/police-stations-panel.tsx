@@ -18,21 +18,21 @@ export function PoliceStationsPanel() {
   }, [data, search]);
 
   return (
-    <div className="rounded-3xl border border-[#E8D8C3] bg-white p-6 shadow-sm md:p-8">
+    <div className="rounded-3xl border border-[#EFDFE7] bg-white p-6 shadow-sm md:p-8">
       <div className="mb-6 flex items-center gap-3">
-        <div className="rounded-2xl border border-[#300332]/10 bg-[#F9F1E7] p-2.5">
+        <div className="rounded-2xl border border-[#300332]/10 bg-[#FBF4F7] p-2.5">
           <Building2 className="h-5 w-5 text-[#300332]" />
         </div>
         <h2 className="text-lg font-bold text-[#2D1B14]">Police Stations</h2>
       </div>
 
       <div className="relative mb-4">
-        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#8C6A5E]" />
+        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#8A6F80]" />
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by station name..."
-          className="h-auto rounded-xl border border-[#D4BFAA] bg-[#FCFAF8] py-2.5 pl-10 text-sm text-[#4B2E2B] shadow-none focus-visible:border-[#6B4A3D] focus-visible:ring-4 focus-visible:ring-[#6B4A3D]/5"
+          className="h-auto rounded-xl border border-[#E3CFDA] bg-[#FBF4F7] py-2.5 pl-10 text-sm text-[#300332] shadow-none focus-visible:border-[#6B2D5C] focus-visible:ring-4 focus-visible:ring-[#6B2D5C]/5"
         />
       </div>
 
@@ -43,13 +43,13 @@ export function PoliceStationsPanel() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <p className="text-sm text-[#8C6A5E]">No matching police stations.</p>
+        <p className="text-sm text-[#8A6F80]">No matching police stations.</p>
       ) : (
         <div className="grid max-h-80 grid-cols-2 gap-2 overflow-y-auto md:grid-cols-3">
           {filtered.map((s) => (
             <div
               key={s.id}
-              className="truncate rounded-lg border border-[#E8D8C3] bg-[#FDF8F3] px-3 py-2 text-xs text-[#4B2E2B]"
+              className="truncate rounded-lg border border-[#EFDFE7] bg-[#FBF4F7] px-3 py-2 text-xs text-[#300332]"
               title={s.name}
             >
               {s.name}

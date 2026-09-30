@@ -14,10 +14,12 @@ import type { StoreSettingsInput } from "@/lib/schemas";
  */
 export const DEFAULT_STORE_SETTINGS: Pick<
   StoreSettings,
-  "advanceRequired" | "advanceAmount"
+  "advanceRequired" | "advanceAmount" | "deliveryChargeEnabled" | "deliveryCharge"
 > = {
   advanceRequired: true,
   advanceAmount: 200,
+  deliveryChargeEnabled: true,
+  deliveryCharge: 120,
 };
 
 /** GET /settings — store payment policy (public; checkout renders from it). */
@@ -47,4 +49,26 @@ export function useUpdateStoreSettings() {
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.settings.all }),
   });
+}
+
+/**
+ * Whether the API enforces stock (STOCK_ENFORCEMENT). False until /settings
+ * has loaded, or if it fails — the same as the shop behaved before the flag.
+ */
+export function useStockEnforcement() {
+  const { data } = useStoreSettings();
+  return data?.stockEnforcement === true;
+}
+
+/**
+ * The delivery charge (৳) every order pays: 0 while it's switched off in the
+ * store settings. The API derives the same figure itself when the order is
+ * placed, so this only drives what cart and checkout display and submit.
+ */
+export function useDeliveryCharge() {
+  const { data } = useStoreSettings();
+  const enabled =
+    data?.deliveryChargeEnabled ?? DEFAULT_STORE_SETTINGS.deliveryChargeEnabled;
+  if (!enabled) return 0;
+  return data?.deliveryCharge ?? DEFAULT_STORE_SETTINGS.deliveryCharge;
 }

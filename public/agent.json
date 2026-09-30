@@ -1,0 +1,25 @@
+{
+  "name": "Glowly",
+  "url": "https://glowlybd.com",
+  "description": "Glowly is an online skincare retailer based in Bangladesh, specializing in 100% authentic skincare and beauty products sourced directly from authorized distributors of trusted global brands.",
+  "founded": "2026",
+  "location": {
+    "city": "Chattogram",
+    "country": "Bangladesh"
+  },
+  "contact": {
+    "email": "glowlybd@gmail.com",
+    "phone": "+8801575808878"
+  },
+  "resources": {
+    "llms_txt": "https://glowlybd.com/llms.txt",
+    "shop": "https://glowlybd.com/shop",
+    "about": "https://glowlybd.com/about",
+    "transparency": "https://glowlybd.com/transparency",
+    "track_order": "https://glowlybd.com/track-order",
+    "authenticity_verification": "https://glowlybd.com/authenticity-verification"
+  },
+  "trust": {
+    "authenticity_guarantee": "Glowly sources products directly from authorized distributors. Where supported by the manufacturer, customers can verify authenticity using official brand verification methods or manufacturer-provided batch codes."
+  }
+}

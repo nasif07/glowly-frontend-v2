@@ -15,7 +15,7 @@ export function pick(value: Localized, lang: Lang): string {
 /* ---------------------------- UI string table ---------------------------- */
 /**
  * Every piece of chrome the blog renders, in both languages. Post *content*
- * lives in `blog-data.ts`; this is only labels, buttons and placeholders.
+ * comes from the API; this is only labels, buttons and placeholders.
  */
 export const UI = {
   // Page header

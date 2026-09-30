@@ -91,6 +91,10 @@ Outside Chattogram: 2–10 business days.
 
 Eligible unopened products may be returned within 7 days of delivery. Please see our Return & Exchange Policy for complete details.
 
+## Machine-Readable Data
+
+- https://glowlybd.com/agent.json — Structured JSON summary of Glowly: identity, location, contact details, key resource URLs and our authenticity guarantee.
+
 ## Contact
 
 Website: https://glowlybd.com

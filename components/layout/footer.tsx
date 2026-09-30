@@ -11,6 +11,7 @@ import {
   LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
+import { Pinterest } from "@/components/common/brand-icons";
 import glowlyLogo from "@/public/glowly.png";
 
 interface FooterLink {
@@ -49,6 +50,7 @@ const Footer = () => {
         { label: "Shipping & Delivery Policy", href: "/shipping-delivery-policy" },
         { label: "Return & Exchange Policy", href: "/return-exchange-policy" },
         { label: "Authenticity Verification", href: "/authenticity-verification" },
+        { label: "Free Skin Consultation", href: "/skin-consultation" },
         {
           label: "WhatsApp",
           href: "https://wa.me/+8801575808878?text=Hello! I have a question about Glowly products.",
@@ -61,21 +63,25 @@ const Footer = () => {
       links: [
         {
           label: "Facebook",
-          href: "https://www.facebook.com/glowlybd",
+          href: "https://www.facebook.com/glowlyofficial",
           icon: Facebook,
         },
         {
           label: "Instagram",
-          href: "https://instagram.com/glowly",
+          href: "https://instagram.com/glowly.bd",
           icon: Instagram,
         },
-        { label: "Tiktok", href: "https://tiktok.com/@glowly", icon: Music2 },
+        { label: "Tiktok", href: "https://tiktok.com/@glowly.bd", icon: Music2 },
         {
           label: "Youtube",
-          href: "https://youtube.com/@glowly",
+          href: "https://www.youtube.com/channel/UCkRpdS24eTfWGXsJGUUJo4A",
           icon: Youtube,
         },
-        { label: "Pinterest", href: "https://pinterest.com/glowly" },
+        {
+          label: "Pinterest",
+          href: "https://www.pinterest.com/glowlybd/",
+          icon: Pinterest,
+        },
       ],
     },
   ];

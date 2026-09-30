@@ -92,7 +92,7 @@ export function MediaUploader({
 
   return (
     <div className={className}>
-      <label className="mb-2 flex items-center gap-1 text-sm font-medium text-[#4B2E2B]">
+      <label className="mb-2 flex items-center gap-1 text-sm font-medium text-[#300332]">
         {type === "video" ? (
           <Film className="h-4 w-4" />
         ) : (
@@ -102,7 +102,7 @@ export function MediaUploader({
       </label>
 
       <div
-        className="relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#D4BFAA] bg-[#FDF8F3] p-6 transition-all duration-300 hover:border-[#6B4A3D] hover:bg-[#F9F1EA]"
+        className="relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#E3CFDA] bg-[#FBF4F7] p-6 transition-all duration-300 hover:border-[#6B2D5C] hover:bg-[#F9F1EA]"
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -121,16 +121,16 @@ export function MediaUploader({
 
         {!uploading && (
           <div className="text-center">
-            <UploadCloud className="mx-auto mb-2 h-6 w-6 text-[#6B4A3D]" />
-            <p className="text-sm font-medium text-[#4B2E2B]">Upload media</p>
-            <p className="text-[11px] text-[#6B4A3D]">
+            <UploadCloud className="mx-auto mb-2 h-6 w-6 text-[#6B2D5C]" />
+            <p className="text-sm font-medium text-[#300332]">Upload media</p>
+            <p className="text-[11px] text-[#6B2D5C]">
               Image (≤{IMAGE_MAX_MB}MB) or video (≤{VIDEO_MAX_MB}MB)
             </p>
           </div>
         )}
 
         {uploading && (
-          <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-[#D4BFAA] border-t-[#6B4A3D]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-[#E3CFDA] border-t-[#6B2D5C]" />
         )}
       </div>
 

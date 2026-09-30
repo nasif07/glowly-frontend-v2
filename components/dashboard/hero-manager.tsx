@@ -87,15 +87,15 @@ function SlideForm({
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#E8D8C3] bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-[#F1E6DA] px-6 py-4">
-          <h3 className="flex items-center gap-2 font-bold text-[#4B2E2B]">
-            <Images className="h-4 w-4 text-[#A67B5B]" />
+      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#EFDFE7] bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-[#F5E9EF] px-6 py-4">
+          <h3 className="flex items-center gap-2 font-bold text-[#300332]">
+            <Images className="h-4 w-4 text-[#C4891E]" />
             {isEdit ? "Edit Slide" : "New Slide"}
           </h3>
           <button
             onClick={onClose}
-            className="rounded-full p-1.5 text-[#8C6A5E] hover:bg-[#F9F1E7]"
+            className="rounded-full p-1.5 text-[#8A6F80] hover:bg-[#FBF4F7]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -104,8 +104,8 @@ function SlideForm({
         <form onSubmit={handleSubmit} className="space-y-6 p-6">
           {/* Media type */}
           <div>
-            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#4B2E2B]">
-              <Film className="h-3.5 w-3.5 text-[#A67B5B]" />
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#300332]">
+              <Film className="h-3.5 w-3.5 text-[#C4891E]" />
               Media Type
             </label>
             <div className="flex gap-2">
@@ -116,8 +116,8 @@ function SlideForm({
                   onClick={() => setType(t)}
                   className={`flex-1 rounded-2xl border py-2.5 text-xs font-bold tracking-wider uppercase transition-all ${
                     type === t
-                      ? "border-[#4B2E2B] bg-[#4B2E2B] text-white"
-                      : "border-[#D4BFAA] bg-[#FCFAF8] text-[#8C6A5E] hover:border-[#6B4A3D]"
+                      ? "border-[#300332] bg-[#300332] text-white"
+                      : "border-[#E3CFDA] bg-[#FBF4F7] text-[#8A6F80] hover:border-[#6B2D5C]"
                   }`}
                 >
                   {t === "image" ? "Image" : "Video"}
@@ -141,27 +141,27 @@ function SlideForm({
 
           {/* Optional caption */}
           <div>
-            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#4B2E2B]">
-              <Sparkles className="h-3.5 w-3.5 text-[#A67B5B]" />
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#300332]">
+              <Sparkles className="h-3.5 w-3.5 text-[#C4891E]" />
               Slide Caption{" "}
-              <span className="font-normal text-[#B9A48F]">(optional)</span>
+              <span className="font-normal text-[#B89AAC]">(optional)</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., New Winter Collection"
-              className="w-full rounded-2xl border border-[#D4BFAA] bg-[#FCFAF8] px-5 py-3 text-[#4B2E2B] transition-all focus:border-[#6B4A3D] focus:ring-4 focus:ring-[#6B4A3D]/5 focus:outline-none"
+              className="w-full rounded-2xl border border-[#E3CFDA] bg-[#FBF4F7] px-5 py-3 text-[#300332] transition-all focus:border-[#6B2D5C] focus:ring-4 focus:ring-[#6B2D5C]/5 focus:outline-none"
             />
           </div>
 
           {/* Active toggle */}
-          <div className="flex items-center justify-between rounded-2xl border border-[#E8D8C3] bg-[#F9F1E7] px-5 py-4">
+          <div className="flex items-center justify-between rounded-2xl border border-[#EFDFE7] bg-[#FBF4F7] px-5 py-4">
             <div>
-              <p className="text-xs font-bold tracking-wider text-[#4B2E2B] uppercase">
+              <p className="text-xs font-bold tracking-wider text-[#300332] uppercase">
                 Active
               </p>
-              <p className="text-[10px] text-[#8C6A5E]">
+              <p className="text-[10px] text-[#8A6F80]">
                 Show this slide on the storefront
               </p>
             </div>
@@ -172,7 +172,7 @@ function SlideForm({
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
               />
-              <div className="peer h-6 w-10 rounded-full bg-[#D4BFAA] after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#22C55E] peer-checked:after:translate-x-4" />
+              <div className="peer h-6 w-10 rounded-full bg-[#E3CFDA] after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#22C55E] peer-checked:after:translate-x-4" />
             </label>
           </div>
 
@@ -294,7 +294,7 @@ export function HeroManager() {
           {[1, 2, 3].map((n) => (
             <div
               key={n}
-              className="h-24 w-full animate-pulse rounded-2xl border border-[#E0C9A6] bg-white"
+              className="h-24 w-full animate-pulse rounded-2xl border border-[#EAD9E2] bg-white"
             />
           ))}
         </div>
@@ -302,16 +302,16 @@ export function HeroManager() {
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_360px]">
           {/* ---- Slides ---- */}
           <section>
-            <h2 className="mb-4 text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+            <h2 className="mb-4 text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
               Slides{" "}
               {slides.length > 0 && `(${slides.length}) — drag to reorder`}
             </h2>
 
             {slides.length === 0 ? (
-              <div className="rounded-3xl border-2 border-dashed border-[#E0C9A6] bg-white p-12 text-center">
-                <Images className="mx-auto mb-4 h-12 w-12 text-[#E0C9A6]" />
-                <h3 className="text-lg font-bold text-[#4B2E2B]">No slides yet</h3>
-                <p className="text-[#8C6A5E]">
+              <div className="rounded-3xl border-2 border-dashed border-[#EAD9E2] bg-white p-12 text-center">
+                <Images className="mx-auto mb-4 h-12 w-12 text-[#EAD9E2]" />
+                <h3 className="text-lg font-bold text-[#300332]">No slides yet</h3>
+                <p className="text-[#8A6F80]">
                   Add image or video slides to build the homepage hero.
                 </p>
               </div>
@@ -324,14 +324,14 @@ export function HeroManager() {
                     onDragStart={() => setDragIndex(index)}
                     onDragOver={(e) => handleDragOver(e, index)}
                     onDragEnd={persistOrder}
-                    className={`flex items-center gap-4 rounded-2xl border border-[#E0C9A6] bg-white p-3 shadow-sm transition-all ${
-                      dragIndex === index ? "opacity-60 ring-2 ring-[#D4BFAA]" : ""
+                    className={`flex items-center gap-4 rounded-2xl border border-[#EAD9E2] bg-white p-3 shadow-sm transition-all ${
+                      dragIndex === index ? "opacity-60 ring-2 ring-[#E3CFDA]" : ""
                     }`}
                   >
-                    <GripVertical className="h-5 w-5 shrink-0 cursor-grab text-[#C9B7A5] active:cursor-grabbing" />
+                    <GripVertical className="h-5 w-5 shrink-0 cursor-grab text-[#B89AAC] active:cursor-grabbing" />
 
                     {/* Preview */}
-                    <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border border-[#E0C9A6] bg-[#FBF6EF]">
+                    <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border border-[#EAD9E2] bg-[#FBF4F7]">
                       {slide.type === "video" ? (
                         <video
                           src={slide.mediaUrl}
@@ -358,9 +358,9 @@ export function HeroManager() {
 
                     {/* Info */}
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-bold text-[#4B2E2B]">
+                      <p className="truncate font-bold text-[#300332]">
                         {slide.title || (
-                          <span className="font-normal text-[#B9A48F] italic">
+                          <span className="font-normal text-[#B89AAC] italic">
                             No caption
                           </span>
                         )}
@@ -388,7 +388,7 @@ export function HeroManager() {
                           setEditingSlide(slide);
                           setModalOpen(true);
                         }}
-                        className="rounded-lg p-2 text-[#6B4A3D] transition-colors hover:bg-[#F9F1E7]"
+                        className="rounded-lg p-2 text-[#6B2D5C] transition-colors hover:bg-[#FBF4F7]"
                         aria-label="Edit slide"
                       >
                         <Pencil className="h-4 w-4" />
@@ -409,72 +409,72 @@ export function HeroManager() {
 
           {/* ---- Banner settings ---- */}
           <section>
-            <h2 className="mb-4 text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+            <h2 className="mb-4 text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
               Banner Content
             </h2>
             <form
               onSubmit={handleSubmit(onSaveBanner)}
-              className="space-y-5 rounded-3xl border border-[#E8D8C3] bg-white p-6 shadow-sm"
+              className="space-y-5 rounded-3xl border border-[#EFDFE7] bg-white p-6 shadow-sm"
             >
               <div>
-                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#4B2E2B]">
-                  <Sparkles className="h-3.5 w-3.5 text-[#A67B5B]" />
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#300332]">
+                  <Sparkles className="h-3.5 w-3.5 text-[#C4891E]" />
                   Title
                 </label>
                 <input
                   type="text"
                   {...register("title")}
                   placeholder="The Art of Authentic Glow"
-                  className="w-full rounded-2xl border border-[#D4BFAA] bg-[#FCFAF8] px-4 py-3 text-[#4B2E2B] transition-all focus:border-[#6B4A3D] focus:ring-4 focus:ring-[#6B4A3D]/5 focus:outline-none"
+                  className="w-full rounded-2xl border border-[#E3CFDA] bg-[#FBF4F7] px-4 py-3 text-[#300332] transition-all focus:border-[#6B2D5C] focus:ring-4 focus:ring-[#6B2D5C]/5 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#4B2E2B]">
-                  <Sparkles className="h-3.5 w-3.5 text-[#A67B5B]" />
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#300332]">
+                  <Sparkles className="h-3.5 w-3.5 text-[#C4891E]" />
                   Subtitle
                 </label>
                 <textarea
                   {...register("subtitle")}
                   rows={3}
                   placeholder="100% authentic skincare sourced directly from global origins."
-                  className="w-full resize-none rounded-2xl border border-[#D4BFAA] bg-[#FCFAF8] px-4 py-3 text-[#4B2E2B] transition-all focus:border-[#6B4A3D] focus:ring-4 focus:ring-[#6B4A3D]/5 focus:outline-none"
+                  className="w-full resize-none rounded-2xl border border-[#E3CFDA] bg-[#FBF4F7] px-4 py-3 text-[#300332] transition-all focus:border-[#6B2D5C] focus:ring-4 focus:ring-[#6B2D5C]/5 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#4B2E2B]">
-                  <Sparkles className="h-3.5 w-3.5 text-[#A67B5B]" />
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#300332]">
+                  <Sparkles className="h-3.5 w-3.5 text-[#C4891E]" />
                   CTA Text
                 </label>
                 <input
                   type="text"
                   {...register("ctaText")}
                   placeholder="Shop the Lineup"
-                  className="w-full rounded-2xl border border-[#D4BFAA] bg-[#FCFAF8] px-4 py-3 text-[#4B2E2B] transition-all focus:border-[#6B4A3D] focus:ring-4 focus:ring-[#6B4A3D]/5 focus:outline-none"
+                  className="w-full rounded-2xl border border-[#E3CFDA] bg-[#FBF4F7] px-4 py-3 text-[#300332] transition-all focus:border-[#6B2D5C] focus:ring-4 focus:ring-[#6B2D5C]/5 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#4B2E2B]">
-                  <Link2 className="h-3.5 w-3.5 text-[#A67B5B]" />
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#300332]">
+                  <Link2 className="h-3.5 w-3.5 text-[#C4891E]" />
                   CTA Link
                 </label>
                 <input
                   type="text"
                   {...register("ctaLink")}
                   placeholder="/shop"
-                  className="w-full rounded-2xl border border-[#D4BFAA] bg-[#FCFAF8] px-4 py-3 text-[#4B2E2B] transition-all focus:border-[#6B4A3D] focus:ring-4 focus:ring-[#6B4A3D]/5 focus:outline-none"
+                  className="w-full rounded-2xl border border-[#E3CFDA] bg-[#FBF4F7] px-4 py-3 text-[#300332] transition-all focus:border-[#6B2D5C] focus:ring-4 focus:ring-[#6B2D5C]/5 focus:outline-none"
                 />
               </div>
 
               {/* Published toggle */}
-              <div className="flex items-center justify-between rounded-2xl border border-[#E8D8C3] bg-[#F9F1E7] px-5 py-4">
+              <div className="flex items-center justify-between rounded-2xl border border-[#EFDFE7] bg-[#FBF4F7] px-5 py-4">
                 <div>
-                  <p className="text-xs font-bold tracking-wider text-[#4B2E2B] uppercase">
+                  <p className="text-xs font-bold tracking-wider text-[#300332] uppercase">
                     Published
                   </p>
-                  <p className="text-[10px] text-[#8C6A5E]">
+                  <p className="text-[10px] text-[#8A6F80]">
                     {isPublished ? "Live on the homepage" : "Hidden from visitors"}
                   </p>
                 </div>
@@ -484,7 +484,7 @@ export function HeroManager() {
                     className="peer sr-only"
                     {...register("isPublished")}
                   />
-                  <div className="peer h-6 w-10 rounded-full bg-[#D4BFAA] after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#22C55E] peer-checked:after:translate-x-4" />
+                  <div className="peer h-6 w-10 rounded-full bg-[#E3CFDA] after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#22C55E] peer-checked:after:translate-x-4" />
                 </label>
               </div>
 

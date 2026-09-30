@@ -20,9 +20,9 @@ export function PaymentsPanel() {
   const meta = data?.meta;
 
   return (
-    <div className="rounded-3xl border border-[#E8D8C3] bg-white p-6 shadow-sm md:p-8">
+    <div className="rounded-3xl border border-[#EFDFE7] bg-white p-6 shadow-sm md:p-8">
       <div className="mb-6 flex items-center gap-3">
-        <div className="rounded-2xl border border-[#300332]/10 bg-[#F9F1E7] p-2.5">
+        <div className="rounded-2xl border border-[#300332]/10 bg-[#FBF4F7] p-2.5">
           <CreditCard className="h-5 w-5 text-[#300332]" />
         </div>
         <h2 className="text-lg font-bold text-[#2D1B14]">Payments</h2>
@@ -35,7 +35,7 @@ export function PaymentsPanel() {
           ))}
         </div>
       ) : payments.length === 0 ? (
-        <p className="text-sm text-[#8C6A5E]">No payment records yet.</p>
+        <p className="text-sm text-[#8A6F80]">No payment records yet.</p>
       ) : (
         <div className="space-y-2">
           {payments.map((p) => (
@@ -43,12 +43,12 @@ export function PaymentsPanel() {
               key={p.id}
               type="button"
               onClick={() => setSelectedId(String(p.id))}
-              className="flex w-full items-center justify-between rounded-xl border border-[#E8D8C3] bg-[#FDF8F3] px-4 py-3 text-left transition-colors hover:border-[#300332]/30"
+              className="flex w-full items-center justify-between rounded-xl border border-[#EFDFE7] bg-[#FBF4F7] px-4 py-3 text-left transition-colors hover:border-[#300332]/30"
             >
-              <span className="text-sm font-semibold text-[#4B2E2B]">
+              <span className="text-sm font-semibold text-[#300332]">
                 Payment #{p.id}
               </span>
-              <span className="flex items-center gap-3 text-xs text-[#8C6A5E]">
+              <span className="flex items-center gap-3 text-xs text-[#8A6F80]">
                 {p.amount !== undefined && <span>৳{Number(p.amount).toLocaleString()}</span>}
                 {p.created_at && <span>{p.created_at}</span>}
               </span>
@@ -62,11 +62,11 @@ export function PaymentsPanel() {
           type="button"
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page <= 1}
-          className="flex items-center gap-1 rounded-full border border-[#D4BFAA] px-3 py-1.5 text-xs font-semibold text-[#4B2E2B] disabled:opacity-40"
+          className="flex items-center gap-1 rounded-full border border-[#E3CFDA] px-3 py-1.5 text-xs font-semibold text-[#300332] disabled:opacity-40"
         >
           <ChevronLeft size={14} /> Prev
         </button>
-        <span className="text-xs text-[#8C6A5E]">
+        <span className="text-xs text-[#8A6F80]">
           Page {meta?.page ?? page}
           {meta?.totalPage ? ` of ${meta.totalPage}` : ""}
         </span>
@@ -74,23 +74,23 @@ export function PaymentsPanel() {
           type="button"
           onClick={() => setPage((p) => p + 1)}
           disabled={meta?.totalPage ? page >= meta.totalPage : payments.length < PER_PAGE}
-          className="flex items-center gap-1 rounded-full border border-[#D4BFAA] px-3 py-1.5 text-xs font-semibold text-[#4B2E2B] disabled:opacity-40"
+          className="flex items-center gap-1 rounded-full border border-[#E3CFDA] px-3 py-1.5 text-xs font-semibold text-[#300332] disabled:opacity-40"
         >
           Next <ChevronRight size={14} />
         </button>
       </div>
 
       {selectedId && (
-        <div className="mt-6 rounded-2xl border border-[#E8D8C3] bg-[#FDF8F3] p-5">
+        <div className="mt-6 rounded-2xl border border-[#EFDFE7] bg-[#FBF4F7] p-5">
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-xs font-bold tracking-wide text-[#4B2E2B] uppercase">
+            <p className="text-xs font-bold tracking-wide text-[#300332] uppercase">
               Payment #{selectedId} Consignments
             </p>
             <button
               type="button"
               onClick={() => setSelectedId(null)}
               aria-label="Close"
-              className="text-[#8C6A5E] hover:text-[#4B2E2B]"
+              className="text-[#8A6F80] hover:text-[#300332]"
             >
               <X size={16} />
             </button>
@@ -103,14 +103,14 @@ export function PaymentsPanel() {
               {detail.consignments.map((c, i) => (
                 <pre
                   key={i}
-                  className="overflow-x-auto rounded-lg bg-white p-3 text-[11px] text-[#4B2E2B]"
+                  className="overflow-x-auto rounded-lg bg-white p-3 text-[11px] text-[#300332]"
                 >
                   {JSON.stringify(c, null, 2)}
                 </pre>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-[#8C6A5E]">No consignments on this payment.</p>
+            <p className="text-sm text-[#8A6F80]">No consignments on this payment.</p>
           )}
         </div>
       )}

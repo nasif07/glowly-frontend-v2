@@ -1,24 +1,24 @@
-"use client";
+import { categoryStyle } from "@/lib/blog";
 
-import { getCategory } from "@/lib/blog";
-import { pick } from "@/lib/i18n";
-import { useLang } from "@/hooks/use-language";
-import type { BlogCategorySlug } from "@/types/blog";
-
+/**
+ * Category chip. The API stores the category as free text typed in the
+ * dashboard, so the colour is derived from the name rather than looked up in a
+ * fixed table — see `categoryStyle`. Renders nothing for a blank category.
+ */
 export default function CategoryBadge({
   category,
   className = "",
 }: {
-  category: BlogCategorySlug;
+  category: string;
   className?: string;
 }) {
-  const { lang } = useLang();
-  const cat = getCategory(category);
+  if (!category) return null;
+
   return (
     <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] font-montserrat ${cat.badge} ${className}`}
+      className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] font-montserrat ${categoryStyle(category).badge} ${className}`}
     >
-      {pick(cat.name, lang)}
+      {category}
     </span>
   );
 }

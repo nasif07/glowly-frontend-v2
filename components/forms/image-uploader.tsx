@@ -176,13 +176,13 @@ export function ImageUploader({
 
   return (
     <div className={className}>
-      <label className="mb-2 flex items-center gap-1 text-sm font-medium text-[#4B2E2B]">
+      <label className="mb-2 flex items-center gap-1 text-sm font-medium text-[#300332]">
         <ImageIcon className="h-4 w-4" />
         {label} {required && <span className="text-red-500">*</span>}
       </label>
 
       <div
-        className="relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#D4BFAA] bg-[#FDF8F3] p-6 transition-all duration-300 hover:border-[#6B4A3D] hover:bg-[#F9F1EA]"
+        className="relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#E3CFDA] bg-[#FBF4F7] p-6 transition-all duration-300 hover:border-[#6B2D5C] hover:bg-[#F9F1EA]"
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -205,14 +205,14 @@ export function ImageUploader({
 
         {!uploading && (
           <div className="text-center">
-            <UploadCloud className="mx-auto mb-2 h-6 w-6 text-[#6B4A3D]" />
-            <p className="text-sm font-medium text-[#4B2E2B]">
+            <UploadCloud className="mx-auto mb-2 h-6 w-6 text-[#6B2D5C]" />
+            <p className="text-sm font-medium text-[#300332]">
               {multiple
                 ? `Upload images (${images.length}/${max})`
                 : "Upload image"}
             </p>
-            <p className="text-[11px] text-[#6B4A3D]">Click or drag & drop</p>
-            <p className="mt-1 text-[11px] font-medium text-[#A67B5B]">
+            <p className="text-[11px] text-[#6B2D5C]">Click or drag & drop</p>
+            <p className="mt-1 text-[11px] font-medium text-[#C4891E]">
               {requirementHint}
             </p>
           </div>
@@ -220,13 +220,13 @@ export function ImageUploader({
 
         {uploading && (
           <div className="w-full max-w-55 text-center">
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E8D8C3]">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#EFDFE7]">
               <div
-                className="h-full rounded-full bg-[#6B4A3D] transition-[width] duration-200 ease-out"
+                className="h-full rounded-full bg-[#6B2D5C] transition-[width] duration-200 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="mt-2 text-[11px] font-medium text-[#6B4A3D]">
+            <p className="mt-2 text-[11px] font-medium text-[#6B2D5C]">
               Uploading… {progress}%
             </p>
           </div>

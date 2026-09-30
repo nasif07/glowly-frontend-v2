@@ -88,6 +88,27 @@ export function useUpdateOrderStatus(id: string) {
 }
 
 /**
+ * PATCH /orders/:id/pricing — change the flat discount and/or delivery fee.
+ * The API recomputes the total and due amount from them.
+ */
+export function useUpdateOrderPricing(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: { discount?: number; shippingCharge?: number }) => {
+      const { data } = await api.patch<ApiResponse<Order>>(
+        `/orders/${id}/pricing`,
+        payload,
+      );
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.orders.detail(id) });
+      qc.invalidateQueries({ queryKey: queryKeys.orders.lists() });
+    },
+  });
+}
+
+/**
  * POST /orders/:id/steadfast — send this order to Steadfast as a courier
  * consignment, auto-filled server-side from the order's own shipping details.
  */

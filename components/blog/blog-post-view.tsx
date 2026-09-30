@@ -1,37 +1,28 @@
 "use client";
 
-import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Clock, Calendar, Eye } from "lucide-react";
-import { estimateReadTime, localizePost } from "@/lib/blog";
 import { t, formatDate, formatViews, localizeDigits } from "@/lib/i18n";
 import { useLang } from "@/hooks/use-language";
 import CategoryBadge from "@/components/blog/category-badge";
-import ContentRenderer from "@/components/blog/content-renderer";
+import { AuthorAvatar } from "@/components/blog/author-chip";
+import { RichText } from "@/components/common/rich-text";
 import BlogCard from "@/components/blog/blog-card";
 import BlogComments from "@/components/blog/blog-comments";
 import NewsletterForm from "@/components/blog/newsletter-form";
 import LanguageToggle from "@/components/blog/language-toggle";
 import { ShareButtons, PostActions } from "@/components/blog/share-buttons";
-import type { RawBlogPost } from "@/types/blog";
+import type { BlogView } from "@/lib/blog";
 
 export default function BlogPostView({
-  post: rawPost,
-  related: rawRelated,
+  post,
+  related,
 }: {
-  post: RawBlogPost;
-  related: RawBlogPost[];
+  post: BlogView;
+  related: BlogView[];
 }) {
   const { lang } = useLang();
-
-  const post = useMemo(() => localizePost(rawPost, lang), [rawPost, lang]);
-  const related = useMemo(
-    () => rawRelated.map((p) => localizePost(p, lang)),
-    [rawRelated, lang],
-  );
-
-  const readTime = estimateReadTime(post.content);
 
   return (
     <div
@@ -65,34 +56,30 @@ export default function BlogPostView({
           </h1>
 
           <div className="flex flex-wrap items-center justify-between gap-4 border-y border-[#300332]/8 py-4">
-            <div className="flex items-center gap-3">
-              <Image
-                src={post.author.avatar}
-                alt={post.author.name}
-                width={48}
-                height={48}
-                className="h-12 w-12 rounded-full object-cover"
-              />
-              <div className="leading-tight">
+            {post.author && (
+              <div className="flex items-center gap-3">
+                <AuthorAvatar name={post.author} size={48} />
                 <p className="text-sm font-bold text-[#2D1B14] font-montserrat">
-                  {post.author.name}
-                </p>
-                <p className="text-xs text-[#300332]/45 font-montserrat">
-                  {post.author.role}
+                  {post.author}
                 </p>
               </div>
-            </div>
+            )}
             <div className="flex items-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-[#300332]/45 font-montserrat">
+              {post.date && (
+                <span className="flex items-center gap-1.5">
+                  <Calendar size={13} /> {formatDate(post.date, lang)}
+                </span>
+              )}
               <span className="flex items-center gap-1.5">
-                <Calendar size={13} /> {formatDate(post.date, lang)}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock size={13} /> {localizeDigits(readTime, lang)}{" "}
+                <Clock size={13} /> {localizeDigits(post.readTime, lang)}{" "}
                 {t("min", lang)}
               </span>
-              <span className="flex items-center gap-1.5">
-                <Eye size={13} /> {formatViews(post.views, lang)}
-              </span>
+              {/* Nothing increments views yet — hide the chip rather than show 0. */}
+              {post.views > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <Eye size={13} /> {formatViews(post.views, lang)}
+                </span>
+              )}
             </div>
           </div>
         </header>
@@ -109,8 +96,21 @@ export default function BlogPostView({
           />
         </div>
 
-        {/* Body */}
-        <ContentRenderer content={post.content} />
+        {/* Body — rich text written in the dashboard, images and all. */}
+        <RichText html={post.html} className="text-[17px]" />
+
+        {post.tags.length > 0 && (
+          <div className="clear-both mt-10 flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-[#300332]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#300332]/60 font-montserrat"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Share + save */}
         <div className="clear-both mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[#300332]/10 pt-6">
@@ -124,26 +124,20 @@ export default function BlogPostView({
         </div>
 
         {/* Author card */}
-        <div className="mt-10 flex items-center gap-4 rounded-3xl bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-          <Image
-            src={post.author.avatar}
-            alt={post.author.name}
-            width={64}
-            height={64}
-            className="h-16 w-16 rounded-full object-cover"
-          />
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-[#300332]/40 font-montserrat">
-              {t("writtenBy", lang)}
-            </p>
-            <p className="text-lg font-bold text-[#2D1B14]">
-              {post.author.name}
-            </p>
-            <p className="text-sm text-[#5D4037]/70 font-montserrat">
-              {post.author.role} {t("atGlowly", lang)}
-            </p>
+        {post.author && (
+          <div className="mt-10 flex items-center gap-4 rounded-3xl bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+            <AuthorAvatar name={post.author} size={64} />
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[#300332]/40 font-montserrat">
+                {t("writtenBy", lang)}
+              </p>
+              <p className="text-lg font-bold text-[#2D1B14]">{post.author}</p>
+              <p className="text-sm text-[#5D4037]/70 font-montserrat">
+                {t("atGlowly", lang)}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Comments */}
         <BlogComments />

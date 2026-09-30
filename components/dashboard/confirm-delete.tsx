@@ -15,8 +15,8 @@ export function confirmDelete({
 }) {
   toast.custom(
     (id) => (
-      <div className="flex flex-col gap-3 rounded-2xl border border-[#E0C9A6] bg-white p-4 shadow-lg">
-        <p className="text-sm font-semibold text-[#4B2E2B]">{title}</p>
+      <div className="flex flex-col gap-3 rounded-2xl border border-[#EAD9E2] bg-white p-4 shadow-lg">
+        <p className="text-sm font-semibold text-[#300332]">{title}</p>
         {description && (
           <p className="-mt-2 text-xs text-gray-500">{description}</p>
         )}

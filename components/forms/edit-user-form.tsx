@@ -68,7 +68,7 @@ export function EditUserForm({ id }: { id: string }) {
       </button>
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#4B2E2B]">
+        <h1 className="text-2xl font-bold text-[#300332]">
           {isAdmin ? "Manage User Role" : "Edit Profile"}
         </h1>
       </div>
@@ -76,7 +76,7 @@ export function EditUserForm({ id }: { id: string }) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 rounded-2xl border border-[#E0C9A6] bg-white p-8"
+          className="space-y-6 rounded-2xl border border-[#EAD9E2] bg-white p-8"
         >
           <div className="space-y-2 rounded-xl border border-amber-200 bg-amber-50 p-4">
             <label className="flex items-center gap-2 text-sm font-bold text-amber-800">
@@ -87,7 +87,7 @@ export function EditUserForm({ id }: { id: string }) {
               name="role"
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="h-auto w-full rounded-xl border border-[#D4BFAA] bg-white px-4 py-2.5 shadow-none outline-none focus-visible:ring-2 focus-visible:ring-amber-500">
+                  <SelectTrigger className="h-auto w-full rounded-xl border border-[#E3CFDA] bg-white px-4 py-2.5 shadow-none outline-none focus-visible:ring-2 focus-visible:ring-amber-500">
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
@@ -107,7 +107,7 @@ export function EditUserForm({ id }: { id: string }) {
           <button
             type="submit"
             disabled={updateRole.isPending}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#4B2E2B] py-4 font-bold text-white transition-all hover:shadow-xl"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#300332] py-4 font-bold text-white transition-all hover:shadow-xl"
           >
             {updateRole.isPending ? (
               <Loader2 className="animate-spin" size={18} />

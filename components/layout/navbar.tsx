@@ -12,6 +12,7 @@ import {
   ShoppingBag,
   X,
   Package,
+  Stethoscope,
 } from "lucide-react";
 import { NavSearch } from "@/components/layout/nav-search";
 import { useAuth } from "@/hooks/use-auth";
@@ -22,6 +23,9 @@ import glowlyLogo from "@/public/glowly.png";
 const desktopNav = [
   { label: "Home", path: "/" },
   { label: "Shop", path: "/shop" },
+  { label: "Combos", path: "/shop?type=bundle" },
+  { label: "Consultation", path: "/skin-consultation" },
+  { label: "Blogs", path: "/blog" },
   { label: "About", path: "/about" },
   { label: "Track Order", path: "/track-order" },
 ];
@@ -29,9 +33,22 @@ const desktopNav = [
 const mobileBottomNav = [
   { label: "Home", icon: Home, path: "/" },
   { label: "Shop", icon: ShoppingBag, path: "/shop" },
+  // Blogs gave its slot to the consultation; the bar only fits five items.
+  // Blog is still linked from the footer.
+  { label: "Consult", icon: Stethoscope, path: "/skin-consultation" },
   { label: "Cart", icon: ShoppingCart, path: "/cart", isCart: true },
-  { label: "Track Order", icon: Package, path: "/track-order" },
+  // Shortened from "Track Order": five items share the bar, and the full
+  // label no longer fits one line at this width.
+  { label: "Track", icon: Package, path: "/track-order" },
 ];
+
+/**
+ * Highlight a nav item on its own page and, for section roots, on the pages
+ * underneath it — otherwise reading a post at /blog/<slug> would leave nothing
+ * in the nav marked active.
+ */
+const isNavActive = (pathname: string, path: string) =>
+  path === "/" ? pathname === "/" : pathname === path || pathname.startsWith(`${path}/`);
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -115,20 +132,23 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Navigation - Refined Spacing */}
-            <nav className="hidden lg:flex items-center gap-10">
-              {desktopNav.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.path}
-                  className={`text-[14px] font-bold uppercase tracking-[0.15em] transition-colors duration-300 hover:text-[#D9C5B2] relative py-1 group ${
-                    pathname === item.path ? "text-[#D9C5B2]" : "text-white"
-                  }`}>
-                  {item.label}
-                  <span
-                    className={`absolute -bottom-1 left-0 h-[1.5px] bg-[#D9C5B2] transition-all duration-500 ease-in-out ${pathname === item.path ? "w-full" : "w-0 group-hover:w-full"}`}
-                  />
-                </Link>
-              ))}
+            <nav className="hidden lg:flex items-center gap-3 xl:gap-7">
+              {desktopNav.map((item) => {
+                const isActive = isNavActive(pathname, item.path);
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.path}
+                    className={`whitespace-nowrap text-[12px] xl:text-[13px] font-bold uppercase tracking-wider xl:tracking-widest transition-colors duration-300 hover:text-[#D9C5B2] relative py-1 group ${
+                      isActive ? "text-[#D9C5B2]" : "text-white"
+                    }`}>
+                    {item.label}
+                    <span
+                      className={`absolute -bottom-1 left-0 h-[1.5px] bg-[#D9C5B2] transition-all duration-500 ease-in-out ${isActive ? "w-full" : "w-0 group-hover:w-full"}`}
+                    />
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Search Section - Smooth Width Transition */}
@@ -203,7 +223,7 @@ const Navbar = () => {
       <nav className="lg:hidden fixed bottom-4 left-4 right-4 bg-linear-to-r from-[#360718]/90 via-[#8E1454]/90 to-[#360718]/90 backdrop-blur-xl border border-[#F49AC2]/10 z-50 rounded-3xl px-2 shadow-[0_15px_40px_-12px_rgba(142,20,84,0.6)] overflow-hidden">
         <div className="flex justify-around items-center h-16">
           {mobileBottomNav.map((item) => {
-            const isActive = pathname === item.path;
+            const isActive = isNavActive(pathname, item.path);
             const Icon = item.icon;
             return (
               <Link

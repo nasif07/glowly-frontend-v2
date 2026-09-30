@@ -20,7 +20,7 @@ import { GlowButton } from "@/components/forms/glow-button";
 import { ReturnStatusBadge } from "./status-badge";
 
 const fieldInput =
-  "h-auto rounded-xl border border-[#D4BFAA] bg-[#FCFAF8] px-4 py-2.5 text-sm text-[#4B2E2B] shadow-none focus-visible:border-[#6B4A3D] focus-visible:ring-4 focus-visible:ring-[#6B4A3D]/5";
+  "h-auto rounded-xl border border-[#E3CFDA] bg-[#FBF4F7] px-4 py-2.5 text-sm text-[#300332] shadow-none focus-visible:border-[#6B2D5C] focus-visible:ring-4 focus-visible:ring-[#6B2D5C]/5";
 
 const PER_PAGE = 10;
 
@@ -58,9 +58,9 @@ export function ReturnRequestsPanel() {
 
   return (
     <div className="space-y-6">
-      <div className="relative overflow-hidden rounded-3xl border border-[#E8D8C3] bg-white p-6 shadow-sm md:p-8">
+      <div className="relative overflow-hidden rounded-3xl border border-[#EFDFE7] bg-white p-6 shadow-sm md:p-8">
         <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-2xl border border-[#300332]/10 bg-[#F9F1E7] p-2.5">
+          <div className="rounded-2xl border border-[#300332]/10 bg-[#FBF4F7] p-2.5">
             <RotateCcw className="h-5 w-5 text-[#300332]" />
           </div>
           <h2 className="text-lg font-bold text-[#2D1B14]">Create Return Request</h2>
@@ -71,7 +71,7 @@ export function ReturnRequestsPanel() {
           className="grid grid-cols-1 gap-4 md:grid-cols-2"
         >
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-[#4B2E2B]">
+            <label className="mb-1.5 block text-xs font-semibold text-[#300332]">
               Consignment ID
             </label>
             <Input
@@ -81,7 +81,7 @@ export function ReturnRequestsPanel() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-[#4B2E2B]">
+            <label className="mb-1.5 block text-xs font-semibold text-[#300332]">
               Invoice
             </label>
             <Input
@@ -91,7 +91,7 @@ export function ReturnRequestsPanel() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-[#4B2E2B]">
+            <label className="mb-1.5 block text-xs font-semibold text-[#300332]">
               Tracking Code
             </label>
             <Input
@@ -101,7 +101,7 @@ export function ReturnRequestsPanel() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-[#4B2E2B]">
+            <label className="mb-1.5 block text-xs font-semibold text-[#300332]">
               Reason
             </label>
             <Input
@@ -121,7 +121,7 @@ export function ReturnRequestsPanel() {
             <GlowButton
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-2xl bg-[#4B2E2B] py-3.5 text-xs font-bold tracking-[2px] text-white uppercase shadow-lg shadow-[#4B2E2B]/20 hover:bg-[#321E1B]"
+              className="w-full rounded-2xl bg-[#300332] py-3.5 text-xs font-bold tracking-[2px] text-white uppercase shadow-lg shadow-[#300332]/20 hover:bg-[#321E1B]"
             >
               {isSubmitting ? "Submitting..." : "Create Return Request"}
             </GlowButton>
@@ -129,8 +129,8 @@ export function ReturnRequestsPanel() {
         </form>
       </div>
 
-      <div className="rounded-3xl border border-[#E8D8C3] bg-white p-6 shadow-sm md:p-8">
-        <h3 className="mb-4 text-sm font-bold tracking-wide text-[#4B2E2B] uppercase">
+      <div className="rounded-3xl border border-[#EFDFE7] bg-white p-6 shadow-sm md:p-8">
+        <h3 className="mb-4 text-sm font-bold tracking-wide text-[#300332] uppercase">
           Return Requests
         </h3>
 
@@ -141,20 +141,20 @@ export function ReturnRequestsPanel() {
             ))}
           </div>
         ) : requests.length === 0 ? (
-          <p className="text-sm text-[#8C6A5E]">No return requests yet.</p>
+          <p className="text-sm text-[#8A6F80]">No return requests yet.</p>
         ) : (
           <div className="space-y-2">
             {requests.map((r) => (
               <div
                 key={r.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#E8D8C3] bg-[#FDF8F3] px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#EFDFE7] bg-[#FBF4F7] px-4 py-3"
               >
-                <div className="text-sm text-[#4B2E2B]">
+                <div className="text-sm text-[#300332]">
                   <span className="font-semibold">
                     #{r.id} {r.invoice ? `— ${r.invoice}` : ""}
                   </span>
                   {r.reason && (
-                    <span className="ml-2 text-xs text-[#8C6A5E]">{r.reason}</span>
+                    <span className="ml-2 text-xs text-[#8A6F80]">{r.reason}</span>
                   )}
                 </div>
                 <ReturnStatusBadge status={r.status} />
@@ -168,11 +168,11 @@ export function ReturnRequestsPanel() {
             type="button"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="flex items-center gap-1 rounded-full border border-[#D4BFAA] px-3 py-1.5 text-xs font-semibold text-[#4B2E2B] disabled:opacity-40"
+            className="flex items-center gap-1 rounded-full border border-[#E3CFDA] px-3 py-1.5 text-xs font-semibold text-[#300332] disabled:opacity-40"
           >
             <ChevronLeft size={14} /> Prev
           </button>
-          <span className="text-xs text-[#8C6A5E]">
+          <span className="text-xs text-[#8A6F80]">
             Page {meta?.page ?? page}
             {meta?.totalPage ? ` of ${meta.totalPage}` : ""}
           </span>
@@ -180,7 +180,7 @@ export function ReturnRequestsPanel() {
             type="button"
             onClick={() => setPage((p) => p + 1)}
             disabled={meta?.totalPage ? page >= meta.totalPage : requests.length < PER_PAGE}
-            className="flex items-center gap-1 rounded-full border border-[#D4BFAA] px-3 py-1.5 text-xs font-semibold text-[#4B2E2B] disabled:opacity-40"
+            className="flex items-center gap-1 rounded-full border border-[#E3CFDA] px-3 py-1.5 text-xs font-semibold text-[#300332] disabled:opacity-40"
           >
             Next <ChevronRight size={14} />
           </button>

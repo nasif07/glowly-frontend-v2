@@ -3,6 +3,9 @@
 import { create } from "zustand";
 import type { CartItem } from "@/types";
 import type { Product, ProductVariant } from "@/types";
+import { getUnitPrice } from "@/lib/pricing";
+import { isShadeProduct } from "@/lib/shades";
+import { bundleItems, isBundleProduct, variantName } from "@/lib/bundle";
 
 /**
  * Client-side cart. There are no server endpoints for the cart in the original
@@ -12,14 +15,23 @@ import type { Product, ProductVariant } from "@/types";
  */
 
 const STORAGE_KEY = "glowlyCart";
-const SHIPPING_CHARGE = 120;
 
 function loadCart(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    // Carts outlive deploys: drop anything that isn't a usable line rather
+    // than let one malformed entry break the cart and checkout pages.
+    return Array.isArray(parsed)
+      ? parsed.filter(
+          (item): item is CartItem =>
+            !!item &&
+            typeof item === "object" &&
+            typeof item.cartId === "string" &&
+            typeof item._id === "string",
+        )
+      : [];
   } catch {
     return [];
   }
@@ -66,15 +78,23 @@ export const useCartStore = create<CartState>((set) => ({
           cartId,
           _id: product._id,
           title: product.title,
-          // A variant's own price wins when it is set. The admin product form
-          // seeds each variant with the product's price, so this only differs
-          // when an admin deliberately priced a variant apart — previously
-          // that variant was still charged at the base price.
-          price:
-            variant?.price || product.discountPrice || product.price || 0,
-          image: product.images?.[0]?.url,
+          // Charged at whatever the product page quoted for this selection —
+          // the discount, or a variant priced apart from the base price.
+          price: getUnitPrice(product, variant),
+          // A shade's own shot, when it has one, is what they picked.
+          image: variant?.image?.url || product.images?.[0]?.url,
           variant,
+          isShade: isShadeProduct(product),
+          slug: product.slug,
           quantity,
+          ...(isBundleProduct(product) && {
+            isBundle: true,
+            bundleContents: bundleItems(product).map((item) => ({
+              title: item.product.title,
+              quantity: item.quantity,
+              option: variantName(item.variant) || undefined,
+            })),
+          }),
         };
         items = [...state.items, newItem];
       }
@@ -137,5 +157,3 @@ export function useCartSubtotal() {
     s.items.reduce((sum, i) => sum + i.price * i.quantity, 0),
   );
 }
-
-export const CART_SHIPPING_CHARGE = SHIPPING_CHARGE;

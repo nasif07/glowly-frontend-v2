@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { TopLoader } from "@/components/common/top-loader";
 import { QueryProvider } from "@/providers/query-provider";
 import { AppGoogleOAuthProvider } from "@/providers/google-oauth-provider";
+import { GoogleAnalytics } from "@/components/common/google-analytics";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -77,6 +78,7 @@ export default function RootLayout({
           <QueryProvider>{children}</QueryProvider>
         </AppGoogleOAuthProvider>
         <Toaster richColors position="top-right" />
+        <GoogleAnalytics />
       </body>
     </html>
   );

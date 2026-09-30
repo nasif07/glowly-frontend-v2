@@ -8,3 +8,4 @@ export * from "./settings.schema";
 export * from "./product.schema";
 export * from "./steadfast.schema";
 export * from "./user.schema";
+export * from "./consultation.schema";

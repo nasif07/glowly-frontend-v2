@@ -1,0 +1,11 @@
+Check Updates by searching these URLs
+
+https://glowlybd.com/.well-known/agent.json
+
+https://glowlybd.com/llms.txt
+
+https://glowlybd.com/robots.txt
+
+https://glowlybd.com/sitemap.xml
+
+lastModified: '2026-08-06

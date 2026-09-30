@@ -3,14 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, Calendar } from "lucide-react";
-import { estimateReadTime } from "@/lib/blog";
 import { t, formatDate, localizeDigits } from "@/lib/i18n";
 import { useLang } from "@/hooks/use-language";
 import CategoryBadge from "@/components/blog/category-badge";
-import type { BlogPost } from "@/types/blog";
+import { AuthorAvatar } from "@/components/blog/author-chip";
+import type { BlogView } from "@/lib/blog";
 
-export default function BlogHero({ post }: { post: BlogPost }) {
+export default function BlogHero({ post }: { post: BlogView }) {
   const { lang } = useLang();
+
   return (
     <section className="mb-14">
       <div className="group relative overflow-hidden rounded-[2rem] shadow-[0_20px_60px_-20px_rgba(48,3,50,0.35)]">
@@ -44,31 +45,27 @@ export default function BlogHero({ post }: { post: BlogPost }) {
             </p>
 
             <div className="flex flex-wrap items-center gap-5">
-              <div className="flex items-center gap-3">
-                <Image
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  width={44}
-                  height={44}
-                  className="h-11 w-11 rounded-full border-2 border-white/30 object-cover"
-                />
-                <div className="leading-tight">
+              {post.author && (
+                <div className="flex items-center gap-3">
+                  <AuthorAvatar
+                    name={post.author}
+                    size={44}
+                    className="border-2 border-white/30"
+                  />
                   <p className="text-sm font-bold text-white font-montserrat">
-                    {post.author.name}
-                  </p>
-                  <p className="text-[11px] text-white/60 font-montserrat">
-                    {post.author.role}
+                    {post.author}
                   </p>
                 </div>
-              </div>
+              )}
 
               <div className="flex items-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-white/60 font-montserrat">
+                {post.date && (
+                  <span className="flex items-center gap-1.5">
+                    <Calendar size={13} /> {formatDate(post.date, lang)}
+                  </span>
+                )}
                 <span className="flex items-center gap-1.5">
-                  <Calendar size={13} /> {formatDate(post.date, lang)}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Clock size={13} />{" "}
-                  {localizeDigits(estimateReadTime(post.content), lang)}{" "}
+                  <Clock size={13} /> {localizeDigits(post.readTime, lang)}{" "}
                   {t("minRead", lang)}
                 </span>
               </div>

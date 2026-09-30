@@ -51,52 +51,52 @@ export function BrandList() {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="h-16 w-full animate-pulse rounded-2xl border border-[#E0C9A6] bg-white" />
+            <div key={n} className="h-16 w-full animate-pulse rounded-2xl border border-[#EAD9E2] bg-white" />
           ))}
         </div>
       ) : brands.length === 0 ? (
-        <div className="rounded-3xl border-2 border-dashed border-[#E0C9A6] bg-white p-12 text-center">
-          <Award className="mx-auto mb-4 h-12 w-12 text-[#E0C9A6]" />
-          <h3 className="text-lg font-bold text-[#4B2E2B]">No brands found</h3>
-          <p className="mb-6 text-[#8C6A5E]">
+        <div className="rounded-3xl border-2 border-dashed border-[#EAD9E2] bg-white p-12 text-center">
+          <Award className="mx-auto mb-4 h-12 w-12 text-[#EAD9E2]" />
+          <h3 className="text-lg font-bold text-[#300332]">No brands found</h3>
+          <p className="mb-6 text-[#8A6F80]">
             Start by adding brands to associate with your products.
           </p>
           <Link
             href="/dashboard/brands/add"
-            className="font-bold text-[#4B2E2B] underline underline-offset-4"
+            className="font-bold text-[#300332] underline underline-offset-4"
           >
             Create Brand
           </Link>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-3xl border border-[#E0C9A6] bg-white shadow-sm">
+        <div className="overflow-hidden rounded-3xl border border-[#EAD9E2] bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[700px] border-collapse text-left">
               <thead className="bg-[#FDFBF7]">
                 <tr>
-                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
                     Logo
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
                     Brand Details
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+                  <th className="px-6 py-4 text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
                     Visibility
                   </th>
-                  <th className="px-6 py-4 text-right text-[10px] font-black tracking-widest text-[#A67B5B] uppercase">
+                  <th className="px-6 py-4 text-right text-[10px] font-black tracking-widest text-[#C4891E] uppercase">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#FBF6EF]">
+              <tbody className="divide-y divide-[#FBF4F7]">
                 {brands.map((brand) => (
                   <tr key={brand._id} className="group transition-colors hover:bg-[#FDFBF7]">
                     <td className="px-6 py-4">
                       {brand.logo ? (
-                        <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-[#E0C9A6] bg-white p-1">
+                        <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-[#EAD9E2] bg-white p-1">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={brand.logo}
@@ -111,8 +111,8 @@ export function BrandList() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <p className="font-bold text-[#4B2E2B]">{brand.name}</p>
-                      <p className="font-mono text-[10px] tracking-wider text-[#8C6A5E] uppercase">
+                      <p className="font-bold text-[#300332]">{brand.name}</p>
+                      <p className="font-mono text-[10px] tracking-wider text-[#8A6F80] uppercase">
                         {brand.slug}
                       </p>
                     </td>
@@ -129,7 +129,7 @@ export function BrandList() {
                     </td>
                     <td className="px-6 py-4">
                       {brand.showOnLanding ? (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-tight text-[#A67B5B] uppercase">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-tight text-[#C4891E] uppercase">
                           <Eye className="h-3.5 w-3.5" /> Featured
                         </span>
                       ) : (
@@ -142,7 +142,7 @@ export function BrandList() {
                       <div className="flex justify-end gap-3">
                         <Link
                           href={`/dashboard/brands/edit/${brand._id}`}
-                          className="inline-flex items-center gap-1 text-[#6B4A3D] hover:text-[#4B2E2B]"
+                          className="inline-flex items-center gap-1 text-[#6B2D5C] hover:text-[#300332]"
                         >
                           <Pencil className="h-4 w-4" /> Edit
                         </Link>
